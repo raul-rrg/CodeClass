@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\ExerciseController;
 use Illuminate\Support\Facades\Route;
 
 // Rutas de autenticacion — prefijo /api/v1
@@ -15,6 +16,18 @@ Route::prefix('v1')->group(function () {
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::get('/me',      [AuthController::class, 'me']);
-    });
 
+
+        // Ejercicios — lectura para los alumnos y profesores
+        Route::apiResource('exercises', ExerciseController::class)
+            ->only(['index', 'show']);
+
+        // Ejercicios — escritura solo para profesores
+        Route::apiResource('exercises', ExerciseController::class)
+            ->only(['store', 'update', 'destroy'])
+            ->middleware('role:teacher');
+
+
+
+    });
 });

@@ -32,28 +32,17 @@ class Exercise extends Model
         'memory_limit',      // MB
     ];
 
-    /**
-     * Convierte los campos de la BD al tipo de dato correcto en PHP.
-     */
-    protected $casts = [
-        'is_verified'  => 'boolean',
-        'is_published' => 'boolean',
-        'time_limit'   => 'float',
-        'memory_limit' => 'integer',
-    ];
-
 
     protected function casts(): array
     {
         return [
-            'is_verified'  => 'boolean',
-            'is_published' => 'boolean',
-            'time_limit'   => 'float',
-            'memory_limit' => 'integer',
-            'difficulty' => Difficulty::class,
-            'solution_languagee' => ProgrammingLanguage::class
+            'is_verified'       => 'boolean',
+            'is_published'      => 'boolean',
+            'time_limit'        => 'float',
+            'memory_limit'      => 'integer',
+            'difficulty'        => Difficulty::class,
+            'solution_language' => ProgrammingLanguage::class,
         ];
-
     }
 
 

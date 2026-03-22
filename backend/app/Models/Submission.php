@@ -26,10 +26,13 @@ class Submission extends Model
     /**
      * Convierte los campos al tipo correcto en PHP.
      */
-    protected $casts = [
-        'language' => ProgrammingLanguage::class,
-        'status'   => SubmissionStatus::class,
-    ];
+    protected function casts(): array
+    {
+        return [
+            'language' => ProgrammingLanguage::class,
+            'status'   => SubmissionStatus::class,
+        ];
+    }
 
     // Una entrega pertenece a un alumno
     public function user(): BelongsTo

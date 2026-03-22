@@ -21,9 +21,12 @@ class TestCase extends Model
     /**
      * Convierte los campos al tipo correcto en PHP.
      */
-    protected $casts = [
-        'is_hidden' => 'boolean',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'is_hidden' => 'boolean',
+        ];
+    }
 
     // Un caso de prueba pertenece a un ejercicio
     public function exercise(): BelongsTo

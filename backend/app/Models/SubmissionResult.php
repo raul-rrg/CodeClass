@@ -30,11 +30,14 @@ class SubmissionResult extends Model
     /**
      * Convierte los campos al tipo correcto en PHP.
      */
-    protected $casts = [
-        'passed'         => 'boolean',
-        'execution_time' => 'float',
-        'memory'         => 'integer',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'passed'         => 'boolean',
+            'execution_time' => 'float',
+            'memory'         => 'integer',
+        ];
+    }
 
     // Un resultado pertenece a una entrega
     public function submission(): BelongsTo
