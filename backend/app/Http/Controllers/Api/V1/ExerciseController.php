@@ -50,6 +50,10 @@ class ExerciseController extends Controller
 
     public function update(UpdateExerciseRequest $request, Exercise $exercise)
     {
+
+        // Verifica que el ejercicio pertenece al profesor autenticado
+        $this->authorize('update', $exercise);
+
         // Actualizar solo los campos validados por UpdateExerciseRequest.
         $exercise->update($request->validated());
 
@@ -60,6 +64,11 @@ class ExerciseController extends Controller
 
     public function destroy(Exercise $exercise)
     {
+
+        // Verifica que el ejercicio pertenece al profesor autenticado
+        $this->authorize('delete', $exercise);
+
+
         $exercise->delete();
 
         // Retornar 204 No Content para indicar que se ha eliminado correctamente.
