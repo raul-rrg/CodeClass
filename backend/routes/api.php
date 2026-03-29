@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\ExerciseController;
+use App\Http\Controllers\Api\V1\SubmissionController;
 use Illuminate\Support\Facades\Route;
 
 // Rutas de autenticacion — prefijo /api/v1
@@ -27,6 +28,9 @@ Route::prefix('v1')->group(function () {
             ->only(['store', 'update', 'destroy'])
             ->middleware('role:teacher');
 
+        // Entregas — solo para alumnos
+        Route::apiResource('submissions', SubmissionController::class)
+            ->only(['store', 'index', 'show']);
 
 
     });

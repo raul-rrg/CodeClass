@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Enums\SubmissionStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Submission\StoreSubmissionRequest;
+use App\Jobs\EvaluateSubmission;
 use App\Models\Submission;
 use Illuminate\Http\Request;
 
@@ -21,8 +22,8 @@ class SubmissionController extends Controller
             'status'      => SubmissionStatus::Pending,
         ]);
 
-        // TODO: crear Job EvaluateSubmission — envía el código a Judge0 y actualiza el status
-        // EvaluateSubmission::dispatch($submission);
+       // Evaluamos la entrega de forma asíncrona despachando un Job a la cola
+        EvaluateSubmission::dispatch($submission);
 
         return response()->json($submission, 202);
     }
