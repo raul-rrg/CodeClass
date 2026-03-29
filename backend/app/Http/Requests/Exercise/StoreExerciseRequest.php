@@ -31,6 +31,31 @@ class StoreExerciseRequest extends FormRequest
             'solution_language' => ['nullable', Rule::enum(ProgrammingLanguage::class)],
             'time_limit'        => ['nullable', 'numeric', 'min:1', 'max:10'],
             'memory_limit'      => ['nullable', 'integer', 'min:32', 'max:512'],
+            'is_published'      => ['sometimes', 'boolean'],
+            'test_cases'        => ['required', 'array', 'min:1'],
+            'test_cases.*.input'           => ['required', 'string'],
+            'test_cases.*.expected_output' => ['required', 'string'],
+            'test_cases.*.is_hidden'       => ['required', 'boolean'],
         ];
+    }
+
+    // Validación adicional: si el ejercicio se publica, al menos un test case debe ser oculto
+    // para que los alumnos no puedan copiar los inputs/outputs y hacer trampa
+    public function withValidator($validator): void
+    {
+        $validator->after(function ($validator) {
+            if (!$this->boolean('is_published')) {
+                return;
+            }
+
+            $hasHidden = collect($this->input('test_cases', []))->contains('is_hidden', true);
+
+            if (!$hasHidden) {
+                $validator->errors()->add(
+                    'test_cases',
+                    'Debe haber al menos un caso de prueba oculto para publicar el ejercicio.'
+                );
+            }
+        });
     }
 }

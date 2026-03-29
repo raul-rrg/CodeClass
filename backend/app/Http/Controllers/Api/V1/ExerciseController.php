@@ -12,6 +12,8 @@ class ExerciseController extends Controller
 {
     public function index(Request $request)
     {
+        // TODO: usar ExerciseResource para ocultar solution_code a los alumnos
+
         $exercises = Exercise::visibleTo($request->user())->get();
 
         return response()->json($exercises, 200);
@@ -19,48 +21,69 @@ class ExerciseController extends Controller
 
     public function store(StoreExerciseRequest $request)
     {
-        // Recogemos los campos validados del Form Request
         $data = $request->validated();
-
-        // Asignamos el user_id desde el token
         $data['user_id'] = $request->user()->id;
 
-        // Creamos el ejercicio en la BD
-        $exercise = Exercise::create($data);
+        // Los test cases van en su propia tabla, los separamos antes de crear el ejercicio
+        // para que Eloquent no intente asignar ese campo al modelo Exercise
+        $testCasesData = $data['test_cases'];
+        unset($data['test_cases']);
 
-        // Devolvemos el ejercicio creado — 201 Created
-        return response()->json($exercise, 201);
+        $exercise = Exercise::create($data);
+        $exercise->testCases()->createMany($testCasesData);
+
+        return response()->json($exercise->load('testCases'), 201);
     }
 
     // Route Model Binding: Laravel resuelve el modelo por PK automáticamente
     // y retorna 404 si no existe
-    public function show(Exercise $exercise)
+    public function show(Request $request, Exercise $exercise)
     {
+        // TODO: usar ExerciseResource para ocultar solution_code a los alumnos
+
         $this->authorize('view', $exercise);
+
+        $user = $request->user();
+
+        // El profesor que creó el ejercicio ve todos los test cases incluidos los ocultos.
+        // Los alumnos y otros profesores solo ven los públicos, para que no puedan hacer trampa.
+        $isOwner = $user->role === 'teacher' && $user->id === $exercise->user_id;
+
+        $exercise->load([
+            'testCases' => fn($q) => $isOwner ? $q : $q->where('is_hidden', false),
+        ]);
 
         return response()->json($exercise, 200);
     }
 
     public function update(UpdateExerciseRequest $request, Exercise $exercise)
     {
-        // Verifica que el ejercicio pertenece al profesor autenticado
         $this->authorize('update', $exercise);
 
-        // Actualizar solo los campos validados por UpdateExerciseRequest.
-        $exercise->update($request->validated());
+        $data = $request->validated();
 
-        // Retornar el modelo actualizado.
-        return response()->json($exercise, 200);
+        // Si el profesor manda test cases, reemplazamos todos los existentes por los nuevos.
+        // Si no los manda, los test cases actuales no se tocan.
+        if (array_key_exists('test_cases', $data)) {
+            $testCasesData = $data['test_cases'];
+            unset($data['test_cases']);
+
+            $exercise->testCases()->delete();
+            $exercise->testCases()->createMany($testCasesData);
+        }
+
+        $exercise->update($data);
+
+        return response()->json($exercise->load('testCases'), 200);
     }
 
     public function destroy(Exercise $exercise)
     {
-        // Verifica que el ejercicio pertenece al profesor autenticado
         $this->authorize('delete', $exercise);
 
+        // Los test cases se eliminan automáticamente por el cascadeOnDelete de la BD
         $exercise->delete();
 
-        // Retornar 204 No Content para indicar que se ha eliminado correctamente.
         return response()->noContent();
     }
 }

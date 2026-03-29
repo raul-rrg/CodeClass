@@ -31,7 +31,5 @@ Route::prefix('v1')->group(function () {
         // Entregas — solo para alumnos
         Route::apiResource('submissions', SubmissionController::class)
             ->only(['store', 'index', 'show']);
-
-
     });
 });

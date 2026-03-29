@@ -42,13 +42,4 @@ class ExercisePolicy
         return $user->id === $exercise->user_id;
     }
 
-    public function restore(User $user, Exercise $exercise): bool
-    {
-        return false;
-    }
-
-    public function forceDelete(User $user, Exercise $exercise): bool
-    {
-        return false;
-    }
 }
