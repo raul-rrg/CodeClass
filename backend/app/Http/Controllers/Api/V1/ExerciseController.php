@@ -6,20 +6,16 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Exercise\StoreExerciseRequest;
 use App\Http\Requests\Exercise\UpdateExerciseRequest;
 use App\Models\Exercise;
+use Illuminate\Http\Request;
 
 class ExerciseController extends Controller
 {
-
-
-    public function index()
+    public function index(Request $request)
     {
-        // TODO: distinguir entre profesor y alumno con Service Layer
-        // Profesor → sus propios ejercicios (publicados y no publicados)
-        // Alumno → solo ejercicios publicados
+        $exercises = Exercise::visibleTo($request->user())->get();
 
-        return response()->json(Exercise::all(), 200);
+        return response()->json($exercises, 200);
     }
-
 
     public function store(StoreExerciseRequest $request)
     {
@@ -36,21 +32,17 @@ class ExerciseController extends Controller
         return response()->json($exercise, 201);
     }
 
-
-
     // Route Model Binding: Laravel resuelve el modelo por PK automáticamente
     // y retorna 404 si no existe
-
     public function show(Exercise $exercise)
     {
-        // Retornamos el ejercicio encontrado — 200 OK
+        $this->authorize('view', $exercise);
+
         return response()->json($exercise, 200);
     }
 
-
     public function update(UpdateExerciseRequest $request, Exercise $exercise)
     {
-
         // Verifica que el ejercicio pertenece al profesor autenticado
         $this->authorize('update', $exercise);
 
@@ -61,13 +53,10 @@ class ExerciseController extends Controller
         return response()->json($exercise, 200);
     }
 
-
     public function destroy(Exercise $exercise)
     {
-
         // Verifica que el ejercicio pertenece al profesor autenticado
         $this->authorize('delete', $exercise);
-
 
         $exercise->delete();
 

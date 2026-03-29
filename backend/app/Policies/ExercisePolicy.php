@@ -15,8 +15,13 @@ class ExercisePolicy
 
     public function view(User $user, Exercise $exercise): bool
     {
-        // Cualquier usuario autenticado puede ver un ejercicio concreto
-        return true;
+        // Ejercicio publicado: cualquier usuario puede verlo
+        if ($exercise->is_published) {
+            return true;
+        }
+
+        // Ejercicio no publicado: solo el profesor que lo creó puede verlo
+        return $user->role === 'teacher' && $user->id === $exercise->user_id;
     }
 
     public function create(User $user): bool

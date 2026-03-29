@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\ProgrammingLanguage;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -45,6 +46,16 @@ class Exercise extends Model
         ];
     }
 
+
+    public function scopeVisibleTo(Builder $query, User $user): Builder
+    {
+        if ($user->role === 'teacher') {
+            return $query->where('is_published', true)
+                         ->orWhere('user_id', $user->id);
+        }
+
+        return $query->where('is_published', true);
+    }
 
     // Un ejercicio pertenece a un profesor
     public function user(): BelongsTo
