@@ -1,11 +1,21 @@
-<script setup></script>
-
 <template>
-  <h1>You did it!</h1>
-  <p>
-    Visit <a href="https://vuejs.org/" target="_blank" rel="noopener">vuejs.org</a> to read the
-    documentation
-  </p>
+  <Navbar />
+  <main>
+    <RouterView />
+  </main>
 </template>
 
-<style scoped></style>
+<script setup>
+import Navbar from './components/Navbar.vue'
+import { useAuthStore } from './stores/auth';
+
+
+const authStore = useAuthStore()
+
+// Si el usuario ya está autenticado, intenta obtener su información al cargar la app
+if (authStore.isAuthenticated) {
+  authStore.fetchUser().catch(() => authStore.logout()) // token inválido/expirado → cierra sesión
+}
+
+
+</script>

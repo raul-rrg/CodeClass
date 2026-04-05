@@ -1,0 +1,64 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+@import 'tailwindcss';
+
+@theme {
+  /* Background */
+  --color-base: #0b0f19;
+
+  /* Typography */
+  --color-title:    #ffffff;
+  --color-subtitle: #d1d5db;
+  --color-body:     #9ca3af;
+
+  /* Brand */
+  --color-accent:   #60a5fa;
+  --color-primary:  #3b82f6;
+
+  /* Surface & Muted */
+  --color-surface:  #111827;
+  --color-muted:    #6b7280;
+
+  /* Font */
+  --font-sans: 'Space Grotesk', sans-serif;
+}
+
+body {
+  background-color: #0b0f19;
+  font-family: var(--font-sans);
+}
+
+@utility bg-hero-radial {
+  background: radial-gradient(ellipse at center, rgb(30 58 138 / 0.2) 0%, #0b0f19 100%);
+}
+
+@utility text-glow-blue {
+  filter: drop-shadow(0 0 8px rgb(96 165 250 / 0.6));
+}
+
+@utility animate-blink {
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+@utility animate-shimmer {
+  animation: shimmer 1.2s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+@utility animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+

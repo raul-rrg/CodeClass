@@ -11,12 +11,19 @@
   },
   "dependencies": {
     "pinia": "^3.0.4",
+    "prism-themes": "^1.9.0",
+    "prismjs": "^1.30.0",
+    "typed.js": "^3.0.0",
     "vue": "^3.5.29",
-    "vue-router": "^5.0.3"
+    "vue-router": "^5.0.4"
   },
   "devDependencies": {
+    "@tailwindcss/vite": "^4.2.2",
     "@vitejs/plugin-vue": "^6.0.4",
+    "autoprefixer": "^10.4.27",
+    "postcss": "^8.5.8",
     "prettier": "3.8.1",
+    "tailwindcss": "^4.2.2",
     "vite": "^7.3.1",
     "vite-plugin-vue-devtools": "^8.0.6"
   },
