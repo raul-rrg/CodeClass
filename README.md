@@ -1,9 +1,9 @@
 <div align="center">
   <br />
 
-  <img src="logo.svg" alt="CodeClass logo" width="96" height="96" />
+  <img src="logo.svg" alt="CodeClass logo" width="220" height="220" />
 
-  <h1>CodeClass</h1>
+  <br /><br />
 
   <p>Plataforma multiplataforma de ejercicios de programación para entornos educativos</p>
 
