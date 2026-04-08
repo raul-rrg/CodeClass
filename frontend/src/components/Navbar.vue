@@ -2,7 +2,7 @@
     <nav class="sticky top-0 z-50 border-b border-white/5 bg-[#0b1326]/95 backdrop-blur-sm">
         <div class="mx-auto flex w-full max-w-screen-2xl items-center justify-between px-8 py-4">
 
-            <RouterLink to="/" class="group flex items-center gap-2">
+            <RouterLink :to="authStore.isAuthenticated ? '/challenges' : '/'" class="group flex items-center gap-2">
                 <svg class="h-6 w-6 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <path d="m18 16 4-4-4-4" />
@@ -15,7 +15,7 @@
             </RouterLink>
 
             <div class="flex items-center gap-8">
-                <RouterLink to="/" class="text-sm transition-colors"
+                <RouterLink v-if="!authStore.isAuthenticated" to="/" class="text-sm transition-colors"
                     :class="isActive('/') ? 'text-accent' : 'text-body hover:text-title'">
                     Home
                 </RouterLink>

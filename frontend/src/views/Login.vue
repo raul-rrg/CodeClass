@@ -95,9 +95,9 @@
                 <div class="mt-6 text-center">
                     <p class="text-sm text-body">
                         ¿No tienes una cuenta?
-                        <a href="/register" class="text-accent hover:text-accent/70 transition-colors">
+                        <RouterLink to="/register" class="text-accent hover:text-accent/70 transition-colors">
                             Regístrate aquí
-                        </a>
+                        </RouterLink>
                     </p>
                 </div>
             </div>

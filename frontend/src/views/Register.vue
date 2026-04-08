@@ -149,9 +149,9 @@
                 <div class="mt-6 text-center">
                     <p class="text-sm text-body">
                         ¿Ya tienes una cuenta?
-                        <a href="/login" class="text-accent hover:text-accent/70 transition-colors">
+                        <RouterLink to="/login" class="text-accent hover:text-accent/70 transition-colors">
                             Inicia sesión aquí
-                        </a>
+                        </RouterLink>
                     </p>
                 </div>
             </div>
@@ -211,9 +211,10 @@ async function submit() {
     serverError.value = ''
     try {
         await authStore.register({ name: name.value, email: email.value, password: password.value, password_confirmation: password_confirmation.value, role: role.value })
-        router.push('/')
+        router.push('/challenges')
     } catch (err) {
-        serverError.value = err.response?.data?.message || 'Error al registrar'
+        if (err?.errors?.email) errorEmail.value = 'Este correo ya está registrado.'
+        else serverError.value = err?.message || 'Error al registrar'
     } finally {
         loading.value = false
     }
