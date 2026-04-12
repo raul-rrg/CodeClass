@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Exercise\StoreExerciseRequest;
 use App\Http\Requests\Exercise\UpdateExerciseRequest;
+use App\Http\Resources\ExerciseResource;
 use App\Models\Exercise;
 use Illuminate\Http\Request;
 
@@ -12,11 +13,13 @@ class ExerciseController extends Controller
 {
     public function index(Request $request)
     {
-        // TODO: usar ExerciseResource para ocultar solution_code a los alumnos
+        // Traemos solo los ejercicios visibles para el usuario autenticado, con su autor incluido para mostrar su nombre.
 
-        $exercises = Exercise::visibleTo($request->user())->get();
+        // La relación 'user' se carga con solo los campos 'id' y 'name' para optimizar la consulta.
+        // La visibilidad se maneja con un scope local en el modelo Exercise, que filtra según el rol del usuario.
+        $exercises = Exercise::visibleTo($request->user())->with('user:id,name')->get();
 
-        return response()->json($exercises, 200);
+        return ExerciseResource::collection($exercises);
     }
 
     public function store(StoreExerciseRequest $request)
