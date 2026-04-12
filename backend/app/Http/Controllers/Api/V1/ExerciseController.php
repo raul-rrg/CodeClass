@@ -8,16 +8,18 @@ use App\Http\Requests\Exercise\UpdateExerciseRequest;
 use App\Http\Resources\ExerciseResource;
 use App\Models\Exercise;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ExerciseController extends Controller
 {
     public function index(Request $request)
     {
-        // Traemos solo los ejercicios visibles para el usuario autenticado, con su autor incluido para mostrar su nombre.
-
-        // La relación 'user' se carga con solo los campos 'id' y 'name' para optimizar la consulta.
+        // Traemos solo los ejercicios visibles para el usuario, con su autor incluido para mostrar su nombre.
+        // La relación 'user' se carga con solo los campos 'id' y 'name' para optimizar la consulta. (id requerido por Eloquent para el JOIN)
         // La visibilidad se maneja con un scope local en el modelo Exercise, que filtra según el rol del usuario.
-        $exercises = Exercise::visibleTo($request->user())->with('user:id,name')->get();
+        // Ruta pública: el usuario puede ser null si no está autenticado — visibleTo devuelve solo publicados en ese caso
+        $user      = Auth::guard('sanctum')->user();
+        $exercises = Exercise::visibleTo($user)->with('user:id,name')->get();
 
         return ExerciseResource::collection($exercises);
     }

@@ -47,14 +47,15 @@ class Exercise extends Model
     }
 
 
-    public function scopeVisibleTo(Builder $query, User $user): Builder
+    public function scopeVisibleTo(Builder $query, ?User $user): Builder
     {
-        if ($user->role === 'teacher') {
-            return $query->where('is_published', true)
-                         ->orWhere('user_id', $user->id);
+        // Sin sesión o alumno: solo ejercicios publicados
+        if (!$user || $user->role !== 'teacher') {
+            return $query->where('is_published', true);
         }
 
-        return $query->where('is_published', true);
+        // Profesor: sus propios ejercicios (publicados o no) + el resto publicados
+        return $query->where('is_published', true)->orWhere('user_id', $user->id);
     }
 
     // Un ejercicio pertenece a un profesor

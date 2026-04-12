@@ -9,8 +9,9 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('v1')->group(function () {
 
     // Rutas publicas — no requieren token
-    Route::post('/register', [AuthController::class, 'register']);
-    Route::post('/login',    [AuthController::class, 'login']);
+    Route::post('/register',       [AuthController::class, 'register']);
+    Route::post('/login',          [AuthController::class, 'login']);
+    Route::get('/exercises',       [ExerciseController::class, 'index']);
 
     // Rutas protegidas — requieren token Sanctum en el header
     // Authorization: Bearer TOKEN
@@ -21,7 +22,7 @@ Route::prefix('v1')->group(function () {
 
         // Ejercicios — lectura para los alumnos y profesores
         Route::apiResource('exercises', ExerciseController::class)
-            ->only(['index', 'show']);
+            ->only(['show']);
 
         // Ejercicios — escritura solo para profesores
         Route::apiResource('exercises', ExerciseController::class)
