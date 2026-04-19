@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Exercise\StoreExerciseRequest;
 use App\Http\Requests\Exercise\UpdateExerciseRequest;
 use App\Http\Resources\ExerciseResource;
+use App\Http\Resources\ExerciseDetailResource;
 use App\Models\Exercise;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -44,8 +45,6 @@ class ExerciseController extends Controller
     // y retorna 404 si no existe
     public function show(Request $request, Exercise $exercise)
     {
-        // TODO: usar ExerciseResource para ocultar solution_code a los alumnos
-
         $this->authorize('view', $exercise);
 
         $user = $request->user();
@@ -55,10 +54,11 @@ class ExerciseController extends Controller
         $isOwner = $user->role === 'teacher' && $user->id === $exercise->user_id;
 
         $exercise->load([
+            'user:id,name',
             'testCases' => fn($q) => $isOwner ? $q : $q->where('is_hidden', false),
         ]);
 
-        return response()->json($exercise, 200);
+        return new ExerciseDetailResource($exercise);
     }
 
     public function update(UpdateExerciseRequest $request, Exercise $exercise)

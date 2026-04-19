@@ -6,6 +6,7 @@ use App\Enums\SubmissionStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Submission\StoreSubmissionRequest;
 use App\Jobs\EvaluateSubmission;
+use App\Http\Resources\SubmissionResource;
 use App\Models\Submission;
 use Illuminate\Http\Request;
 
@@ -25,7 +26,7 @@ class SubmissionController extends Controller
        // Evaluamos la entrega de forma asíncrona despachando un Job a la cola
         EvaluateSubmission::dispatch($submission);
 
-        return response()->json($submission, 202);
+        return (new SubmissionResource($submission))->response()->setStatusCode(202);
     }
 
     public function index(Request $request)
