@@ -20,11 +20,11 @@ class SubmissionResult extends Model
         'submission_id',
         'test_case_id',
         'passed',
-        'actual_output',
+        'output',
+        'error',
+        'status',
         'execution_time',
         'memory',
-        'stderr',
-        'compile_output',
     ];
 
     /**

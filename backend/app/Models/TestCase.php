@@ -25,6 +25,7 @@ class TestCase extends Model
     {
         return [
             'is_hidden' => 'boolean',
+            'input'     => 'array', // JSON array de argumentos: [3, 5], [6], etc.
         ];
     }
 

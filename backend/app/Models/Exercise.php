@@ -25,12 +25,11 @@ class Exercise extends Model
         'description',
         'difficulty',        // easy | medium | hard | insane
         'category',          // arrays | strings | math | recursion | sorting | other
+        'function_name',
         'solution_code',
         'solution_language', // python | java | javascript
         'is_verified',
         'is_published',
-        'time_limit',        // segundos
-        'memory_limit',      // MB
     ];
 
 
@@ -39,8 +38,6 @@ class Exercise extends Model
         return [
             'is_verified'       => 'boolean',
             'is_published'      => 'boolean',
-            'time_limit'        => 'float',
-            'memory_limit'      => 'integer',
             'difficulty'        => Difficulty::class,
             'solution_language' => ProgrammingLanguage::class,
         ];

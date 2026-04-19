@@ -17,8 +17,6 @@ class ExerciseResource extends JsonResource
             'category'     => $this->category,
             'is_verified'  => $this->is_verified,
             'is_published' => $this->is_published,
-            'time_limit'   => $this->time_limit,
-            'memory_limit' => $this->memory_limit,
             'author'       => $this->user?->name,
             'created_at'   => $this->created_at,
         ];

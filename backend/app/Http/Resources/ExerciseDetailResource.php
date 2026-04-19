@@ -15,10 +15,9 @@ class ExerciseDetailResource extends JsonResource
             'description'  => $this->description,
             'difficulty'   => $this->difficulty,
             'category'     => $this->category,
-            'is_verified'  => $this->is_verified,
-            'time_limit'   => $this->time_limit,
-            'memory_limit' => $this->memory_limit,
-            'author'       => $this->user?->name,
+            'is_verified'   => $this->is_verified,
+            'function_name' => $this->function_name,
+            'author'        => $this->user?->name,
             'test_cases'   => $this->testCases->map(fn($tc) => [
                 'id'              => $tc->id,
                 'input'           => $tc->input,
