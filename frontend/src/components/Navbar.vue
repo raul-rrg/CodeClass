@@ -17,7 +17,7 @@
             <div class="flex items-center gap-8">
                 <RouterLink v-if="!authStore.isAuthenticated" to="/" class="text-sm transition-colors"
                     :class="isActive('/') ? 'text-accent' : 'text-body hover:text-title'">
-                    Home
+                    Inicio
                 </RouterLink>
                 <RouterLink to="/challenges" class="text-sm transition-colors"
                     :class="isActive('/challenges') ? 'text-accent' : 'text-body hover:text-title'">

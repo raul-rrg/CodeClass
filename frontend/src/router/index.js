@@ -4,13 +4,16 @@ import { useAuthStore } from '@/stores/auth'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-    { path: '/', name: 'home', component: () => import('@/views/Home.vue'), meta: { requiresGuest: true } },
+    { path: '/', name: 'landing', component: () => import('@/views/Landing.vue'), meta: { requiresGuest: true } },
+    { path: '/home', name: 'home', component: () => import('@/views/Home.vue'), meta: { requiresAuth: true } },
     { path: '/challenges', name: 'challenges', component: () => import('@/views/Challenges.vue') },
+    { path: '/challenges/:id', name: 'challenge', component: () => import('@/views/Challenge.vue'), meta: { requiresAuth: true } },
     { path: '/ranking', name: 'ranking', component: () => import('@/views/Ranking.vue') },
     { path: '/about', name: 'about', component: () => import('@/views/About.vue') },
     { path: '/login', name: 'login', component: () => import('@/views/Login.vue'), meta: { requiresGuest: true } },    // solo sin sesión
     { path: '/register', name: 'register', component: () => import('@/views/Register.vue'), meta: { requiresGuest: true } }, // solo sin sesión
     { path: '/profile', name: 'profile', component: () => import('@/views/Profile.vue'), meta: { requiresAuth: true } },    // requiere sesión
+
   ],
 })
 
