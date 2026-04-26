@@ -26,6 +26,9 @@ class Exercise extends Model
         'difficulty',        // easy | medium | hard | insane
         'category',          // arrays | strings | math | recursion | sorting | other
         'function_name',
+        'parameters',
+        'return_type',
+        'templates',
         'solution_code',
         'solution_language', // python | java | javascript
         'is_verified',
@@ -40,6 +43,8 @@ class Exercise extends Model
             'is_published'      => 'boolean',
             'difficulty'        => Difficulty::class,
             'solution_language' => ProgrammingLanguage::class,
+            'parameters'        => 'array',
+            'templates'         => 'array',
         ];
     }
 
