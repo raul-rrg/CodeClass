@@ -22,11 +22,10 @@ class StoreSubmissionRequest extends FormRequest
      */
     public function rules(): array
     {
-          return [
+        return [
             // TODO: añadir max cuando se defina el límite de caracteres por ejercicio
-            'code'        => ['required', 'string'],
-            'language'    => ['required', Rule::enum(ProgrammingLanguage::class)],
-            'exercise_id' => ['required', 'integer', 'exists:exercises,id'],
+            'code'     => ['required', 'string'],
+            'language' => ['required', Rule::enum(ProgrammingLanguage::class)],
         ];
     }
 }

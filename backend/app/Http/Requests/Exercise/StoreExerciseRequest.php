@@ -27,6 +27,12 @@ class StoreExerciseRequest extends FormRequest
             'description'       => ['required', 'string'],
             'difficulty'        => ['required', Rule::enum(Difficulty::class)],
             'category'          => ['required', 'string', 'max:255'],
+            // Code base — firma de la función que genera el template y el wrapper
+            'function_name'     => ['required', 'string', 'max:64', 'regex:/^[a-zA-Z_][a-zA-Z0-9_]*$/'],
+            'parameters'        => ['required', 'array', 'min:1'],
+            'parameters.*.name' => ['required', 'string', 'max:32', 'regex:/^[a-zA-Z_][a-zA-Z0-9_]*$/'],
+            'parameters.*.type' => ['required', 'string', Rule::in(['int', 'float', 'string', 'bool', 'array'])],
+            'return_type'       => ['required', 'string', Rule::in(['int', 'float', 'string', 'bool', 'array'])],
             'solution_code'     => ['nullable', 'string'],
             'solution_language' => ['nullable', Rule::enum(ProgrammingLanguage::class)],
             'time_limit'        => ['nullable', 'numeric', 'min:1', 'max:10'],

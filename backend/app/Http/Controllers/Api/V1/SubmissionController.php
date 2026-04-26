@@ -6,43 +6,59 @@ use App\Enums\SubmissionStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Submission\StoreSubmissionRequest;
 use App\Jobs\EvaluateSubmission;
-use App\Http\Resources\SubmissionResource;
+use App\Models\Exercise;
 use App\Models\Submission;
 use Illuminate\Http\Request;
 
 class SubmissionController extends Controller
 {
-    public function store(StoreSubmissionRequest $request)
+
+
+    public function store(StoreSubmissionRequest $request, Exercise $exercise)
     {
-        // Crea la entrega en BD con status inicial pending
         $submission = Submission::create([
             'user_id'     => $request->user()->id,
-            'exercise_id' => $request->validated('exercise_id'),
+            'exercise_id' => $exercise->id,
             'code'        => $request->validated('code'),
             'language'    => $request->validated('language'),
             'status'      => SubmissionStatus::Pending,
         ]);
 
-       // Evaluamos la entrega de forma asíncrona despachando un Job a la cola
+        // En segundo plano, evaluamos el submission contra todos los test cases (visibles y ocultos).
         EvaluateSubmission::dispatch($submission);
 
-        return (new SubmissionResource($submission))->response()->setStatusCode(202);
+        // Devolvemos el submission recién creado con sus resultados vacíos (aún no evaluados).
+        return response()->json($submission->refresh()->load('submissionResults'), 201);
     }
 
-    public function index(Request $request)
+
+    public function index(Request $request, Exercise $exercise)
     {
-        // Devuelve solo las entregas del alumno autenticado
-        $submissions = Submission::where('user_id', $request->user()->id)->get();
+        // Consulta base: submissions del ejercicio solicitado.
+        $query = $exercise->submissions();
+        $currentUser = $request->user();
+        $isTeacher = $currentUser->role === 'teacher';
 
-        return response()->json($submissions, 200);
+        // Los alumnos solo pueden ver sus propios envios.
+        if (!$isTeacher) {
+            $query->where('user_id', $currentUser->id);
+        }
+
+        // El profesor tambien necesita datos del alumno para identificar cada envio.
+        $relations = $isTeacher
+            ? ['submissionResults', 'user']
+            : ['submissionResults'];
+
+        // Ordenamos por mas reciente primero para mostrar el historial actualizado.
+        return response()->json($query->with($relations)->latest()->get());
     }
+
 
     public function show(Submission $submission)
     {
-        // Verifica que la submission pertenece al usuario autenticado
+        // El profesor puede ver cualquier submission, el alumno solo los suyos (ver SubmissionPolicy).
         $this->authorize('view', $submission);
 
-        // Devuelve la entrega con los resultados de cada test case evaluado por Judge0
-        return response()->json($submission->load('submissionResults'), 200);
+        return response()->json($submission->load('submissionResults'));
     }
 }

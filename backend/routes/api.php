@@ -2,35 +2,36 @@
 
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\ExerciseController;
+use App\Http\Controllers\Api\V1\RunController;
 use App\Http\Controllers\Api\V1\SubmissionController;
 use Illuminate\Support\Facades\Route;
 
-// Rutas de autenticacion — prefijo /api/v1
 Route::prefix('v1')->group(function () {
 
-    // Rutas publicas — no requieren token
-    Route::post('/register',       [AuthController::class, 'register']);
-    Route::post('/login',          [AuthController::class, 'login']);
-    Route::get('/exercises',       [ExerciseController::class, 'index']);
+    // Rutas públicas
+    Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/login',    [AuthController::class, 'login']);
+    Route::get('/exercises', [ExerciseController::class, 'index']);
 
-    // Rutas protegidas — requieren token Sanctum en el header
-    // Authorization: Bearer TOKEN
+    // Rutas protegidas
     Route::middleware('auth:sanctum')->group(function () {
-        Route::post('/logout', [AuthController::class, 'logout']);
-        Route::get('/me',      [AuthController::class, 'me']);
+        Route::get('/exercises/{exercise}', [ExerciseController::class, 'show']);
+        Route::post('/logout',    [AuthController::class, 'logout']);
+        Route::get('/users/me',   [AuthController::class, 'me']);
 
+        // Ejercicios — escritura solo profesores
+        Route::middleware('role:teacher')->group(function () {
+            Route::post('/exercises',              [ExerciseController::class, 'store']);
+            Route::put('/exercises/{exercise}',    [ExerciseController::class, 'update']);
+            Route::delete('/exercises/{exercise}', [ExerciseController::class, 'destroy']);
+        });
 
-        // Ejercicios — lectura para los alumnos y profesores
-        Route::apiResource('exercises', ExerciseController::class)
-            ->only(['show']);
+        // Run — ejecutar sin guardar (solo test cases visibles)
+        Route::post('/exercises/{exercise}/run', [RunController::class, 'run']);
 
-        // Ejercicios — escritura solo para profesores
-        Route::apiResource('exercises', ExerciseController::class)
-            ->only(['store', 'update', 'destroy'])
-            ->middleware('role:teacher');
-
-        // Entregas — solo para alumnos
-        Route::apiResource('submissions', SubmissionController::class)
-            ->only(['store', 'index', 'show']);
+        // Submissions — anidadas bajo exercise para store/index, plana para show
+        Route::post('/exercises/{exercise}/submissions', [SubmissionController::class, 'store']);
+        Route::get('/exercises/{exercise}/submissions',  [SubmissionController::class, 'index']);
+        Route::get('/submissions/{submission}',          [SubmissionController::class, 'show']);
     });
 });

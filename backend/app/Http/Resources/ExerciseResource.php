@@ -18,6 +18,8 @@ class ExerciseResource extends JsonResource
             'is_verified'  => $this->is_verified,
             'is_published' => $this->is_published,
             'author'       => $this->user?->name,
+            // Indica si el usuario actual ya resolvio este ejercicio.
+            'is_solved'    => (bool) ($this->is_solved ?? false),
             'created_at'   => $this->created_at,
         ];
     }
