@@ -7,6 +7,7 @@ use App\Http\Requests\Exercise\StoreExerciseRequest;
 use App\Http\Requests\Exercise\UpdateExerciseRequest;
 use App\Http\Resources\ExerciseResource;
 use App\Http\Resources\ExerciseDetailResource;
+use App\Jobs\TranslateExerciseJob;
 use App\Models\Exercise;
 use App\Services\TemplateGenerator;
 use Illuminate\Http\Request;
@@ -22,6 +23,11 @@ class ExerciseController extends Controller
         // Consulta base: ejercicios visibles para el usuario actual + autor (solo id y name para optimizar).
         // Si no hay usuario autenticado, visibleTo normalmente devuelve solo ejercicios publicados.
         $query = Exercise::visibleTo($user)->with('user:id,name');
+
+        if ($request->filled('search')) {
+            $locale = app()->getLocale();
+            $query->whereRaw("json_extract(title, '$.{$locale}') LIKE ?", ['%' . $request->search . '%']);
+        }
 
         if ($user) {
             // Anadimos una columna booleana calculada (is_solved) por cada ejercicio.
@@ -59,6 +65,9 @@ class ExerciseController extends Controller
         $exercise = Exercise::create($data);
         $exercise->testCases()->createMany($testCasesData);
 
+        // En segundo plano, traducimos el ejercicio al otro idioma (si se creó en español, lo traducimos al inglés y viceversa).
+        TranslateExerciseJob::dispatch($exercise, app()->getLocale());
+
         return response()->json($exercise->load('testCases'), 201);
     }
 
@@ -94,6 +103,9 @@ class ExerciseController extends Controller
         }
 
         $exercise->update($data);
+
+        // En segundo plano, actualizamos la traducción del ejercicio al otro idioma si cambian los campos de texto o la firma.
+        TranslateExerciseJob::dispatch($exercise, app()->getLocale());
 
         return response()->json($exercise->load('testCases'), 200);
     }

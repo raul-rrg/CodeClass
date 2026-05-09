@@ -8,10 +8,15 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Enums\Difficulty;
+use Spatie\Translatable\HasTranslations;
 
 class Exercise extends Model
 {
 
+
+    use HasTranslations;
+
+    public array $translatable = ['title', 'description', 'short_description'];
 
     /**
      * Los campos que se pueden rellenar masivamente.
@@ -23,6 +28,7 @@ class Exercise extends Model
         'user_id',
         'title',
         'description',
+        'short_description',
         'difficulty',        // easy | medium | hard | insane
         'category',          // arrays | strings | math | recursion | sorting | other
         'function_name',

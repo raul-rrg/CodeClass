@@ -39,4 +39,8 @@ return [
         'url' => env('JUDGE0_URL'),
     ],
 
+    'deepl' => [
+        'key' => env('DEEPL_API_KEY'),
+    ],
+
 ];
