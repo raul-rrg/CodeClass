@@ -1,3 +1,10 @@
+export const DIFFICULTY_TEXT_CLASS = {
+    'easy':   'text-green-400/60',
+    'medium': 'text-yellow-400/60',
+    'hard':   'text-red-400/60',
+    'insane': 'text-purple-400/60',
+}
+
 export const DIFFICULTY_FILTER_CLASS = {
     'all':    'border-blue-500   text-blue-400   bg-blue-500/10',
     'easy':   'border-green-500  text-green-400  bg-green-500/10',
@@ -7,10 +14,10 @@ export const DIFFICULTY_FILTER_CLASS = {
 }
 
 export const DIFFICULTY_BADGE_CLASS = {
-    'easy':   'bg-green-500/20  text-green-400  border border-green-500/40',
-    'medium': 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/40',
-    'hard':   'bg-red-500/20    text-red-400    border border-red-500/40',
-    'insane': 'bg-purple-500/20 text-purple-400 border border-purple-500/40',
+    'easy':   'bg-green-500/8  text-green-400/60  border border-green-500/15',
+    'medium': 'bg-yellow-500/8 text-yellow-400/60 border border-yellow-500/15',
+    'hard':   'bg-red-500/8    text-red-400/60    border border-red-500/15',
+    'insane': 'bg-purple-500/8 text-purple-400/60 border border-purple-500/15',
 }
 
 export const DIFFICULTY_POINTS = {

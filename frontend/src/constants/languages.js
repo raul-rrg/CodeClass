@@ -5,7 +5,7 @@ export const LANGUAGES = [
         id:          'javascript',
         label:       'JavaScript',
         icon:        IconJS,
-        activeClass: 'bg-yellow-400/10 text-yellow-300 ring-1 ring-yellow-400/30',
+        activeClass: 'bg-yellow-400/8 text-yellow-300/80 ring-1 ring-yellow-400/20',
         starter:     `function twoSum(nums, target) {\n    // Tu solución aquí\n}\n`,
     },
     {

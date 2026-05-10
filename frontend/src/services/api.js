@@ -1,15 +1,18 @@
+import i18n from '../plugins/i18n'
+
 const BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8000/api'
 
 async function request(method, endpoint, data = null) {
-  
- // toke guardado al hacer login
-  const token = localStorage.getItem('token')
+
+  const token  = localStorage.getItem('token')
+  const locale = i18n.global.locale.value
 
   const config = {
     method: method,
     headers: {
-      'Content-Type': 'application/json',
-      ...(token && { Authorization: `Bearer ${token}` }), // adjunta el token si existe
+      'Content-Type':   'application/json',
+      'Accept-Language': locale,
+      ...(token && { Authorization: `Bearer ${token}` }),
     },
     body: data ? JSON.stringify(data) : null, // solo incluye body si hay datos
   }
