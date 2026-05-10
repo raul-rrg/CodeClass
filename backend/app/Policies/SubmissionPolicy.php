@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Enums\UserRole;
 use App\Models\Submission;
 use App\Models\User;
 
@@ -15,8 +16,8 @@ class SubmissionPolicy
 
     public function view(User $user, Submission $submission): bool
     {
-        // Un alumno solo puede ver sus propias submissions
-        return $user->id === $submission->user_id;
+        // Profesor puede ver cualquier submission; alumno solo las suyas
+        return $user->role === UserRole::Teacher || $user->id === $submission->user_id;
     }
 
     public function create(User $user): bool

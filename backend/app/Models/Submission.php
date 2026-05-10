@@ -21,6 +21,8 @@ class Submission extends Model
         'status',
         'compile_output',
         'judge0_token',
+        'max_execution_time',
+        'max_memory',
     ];
 
     /**
@@ -29,8 +31,10 @@ class Submission extends Model
     protected function casts(): array
     {
         return [
-            'language' => ProgrammingLanguage::class,
-            'status'   => SubmissionStatus::class,
+            'language'           => ProgrammingLanguage::class,
+            'status'             => SubmissionStatus::class,
+            'max_execution_time' => 'float',
+            'max_memory'         => 'integer',
         ];
     }
 

@@ -40,21 +40,27 @@ class EvaluateSubmission implements ShouldQueue
             );
 
             SubmissionResult::create([
-                'submission_id' => $this->submission->id,
-                'test_case_id'  => $case->id,
-                'passed'        => $result['passed'],
-                'output'        => $result['output'],
-                'error'         => $result['error'],
-                'status'        => $result['status'],
+                'submission_id'  => $this->submission->id,
+                'test_case_id'   => $case->id,
+                'passed'         => $result['passed'],
+                'output'         => $result['output'],
+                'error'          => $result['error'],
+                'status'         => $result['status'],
+                'execution_time' => $result['time'],
+                'memory'         => $result['memory'],
             ]);
 
             if (!$result['passed']) $allPassed = false;
             $compileOutput .= $result['compile_output'];
         }
 
+        $results = $this->submission->submissionResults();
+
         $this->submission->update([
-            'status'         => $allPassed ? 'accepted' : 'rejected',
-            'compile_output' => $compileOutput,
+            'status'             => $allPassed ? 'accepted' : 'rejected',
+            'compile_output'     => $compileOutput,
+            'max_execution_time' => $results->max('execution_time'),
+            'max_memory'         => $results->max('memory'),
         ]);
     }
 

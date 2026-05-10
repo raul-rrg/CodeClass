@@ -38,15 +38,8 @@ class RunController extends Controller
                 $case
             );
 
-            // Errores que afectan a todos los tests por igual: paramos al primero
-            // y devolvemos un único mensaje con el tipo de error.
-            //
-            // - compile_error / runtime_error: el código no puede ejecutarse en absoluto.
-            // - time_limit_exceeded: si el código entra en bucle infinito, todos los tests
-            //   fallarían igual. Mostramos el tiempo del primer test que tardó demasiado.
-            //
-            // $result['compile_output'] tiene el error en lenguajes compilados (Java).
-            // $result['error'] tiene el stderr en lenguajes interpretados (JS, Python).
+            // compile/runtime/timeout afectan todo el código → los tests restantes fallarían igual, no seguir.
+            // compile_output = error compilado (Java), error = stderr interpretado (JS, Python).
             if (in_array($result['status'], ['compile_error', 'runtime_error', 'time_limit_exceeded'])) {
                 return response()->json([
                     'passed_count'   => 0,
@@ -60,6 +53,7 @@ class RunController extends Controller
 
             // Wrong Answer y Presentation Error sí pueden variar por test case, seguimos.
             $results[] = [
+                'test_case_id'    => $case->id,
                 'passed'          => $result['passed'],
                 'output'          => $result['output'],
                 'error'           => $result['error'],

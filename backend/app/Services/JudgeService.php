@@ -10,9 +10,14 @@ class JudgeService
     const TIME_LIMIT   = 5;   // segundos
     const MEMORY_LIMIT = 256; // MB
 
-
-    public function runTestCase(string $language, string $code, string $functionName, array $parameters, string $returnType, object $testCase): array
-    {
+    public function runTestCase(
+        string $language,
+        string $code,
+        string $functionName,
+        array $parameters,
+        string $returnType,
+        object $testCase
+    ): array {
         // Java necesita que el código del alumno quede dentro de una clase Main
         $fullCode = $language === 'java'
             ? $this->buildJavaCode($code, $functionName, $parameters, $returnType)
@@ -44,6 +49,7 @@ class JudgeService
             $passed = $statusId === 3;
         }
 
+        // Judge0 status IDs: 3=accepted, 4=wrong_answer, 5=TLE, 6=compile_error, 7+=runtime_error
         $status = match (true) {
             $statusId === 3                     => 'accepted',
             $statusId === 'presentation_error'  => 'presentation_error',
@@ -60,6 +66,7 @@ class JudgeService
             'compile_output' => $compile,
             'status'         => $status,
             'time'           => $response['time'] ?? null,
+            'memory'         => $response['memory'] ?? null,
         ];
     }
 
@@ -67,6 +74,7 @@ class JudgeService
     private function buildWrapper(string $language, string $functionName): string
     {
         return match ($language) {
+
             // Lee args desde stdin (JSON array), desempaqueta con ... y serializa el resultado a JSON
             'javascript' => <<<JS
             const __args = JSON.parse(require('fs').readFileSync('/dev/stdin', 'utf8'));
@@ -86,9 +94,15 @@ class JudgeService
         };
     }
 
+
     // Para Java el código del alumno se inyecta dentro de la clase Main
-    private function buildJavaCode(string $studentCode, string $functionName, array $parameters, string $returnType): string
-    {
+    private function buildJavaCode(
+        string $studentCode,
+        string $functionName,
+        array $parameters,
+        string $returnType
+    ): string {
+        // tipo PHP → tipo Java / snippet de parse para stdin
         $javaTypeMap = [
             'int'    => 'int',
             'float'  => 'double',
@@ -97,6 +111,7 @@ class JudgeService
             'array'  => 'String', // se pasa como JSON string raw
         ];
 
+        // tipo PHP → snippet Java de parse por índice de token
         $parseCodeMap = [
             'int'    => 'Integer.parseInt(t[%d].trim())',
             'float'  => 'Double.parseDouble(t[%d].trim())',
@@ -105,6 +120,7 @@ class JudgeService
             'array'  => 't[%d].trim()',
         ];
 
+        // Construir líneas de parse y lista de args para la llamada a la función
         $parseLines = [];
         $callArgs   = [];
 
@@ -115,6 +131,7 @@ class JudgeService
             $callArgs[]   = $param['name'];
         }
 
+        // Ensamblar plantilla Java final con el código del alumno inyectado
         $parseLinesStr  = implode("\n", $parseLines);
         $callArgsStr    = implode(', ', $callArgs);
         $javaReturnType = $javaTypeMap[$returnType] ?? 'Object';
