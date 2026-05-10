@@ -6,8 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Models\User;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 
 
 class AuthController extends Controller
@@ -67,6 +70,52 @@ class AuthController extends Controller
         return response()->json($request->user(), 200);
     }
 
+    public function updateProfile(Request $request)
+    {
+        $data = $request->validate([
+            'name'                  => ['sometimes', 'string', 'max:255'],
+            'current_password'      => ['required_with:password', 'string'],
+            'password'              => ['sometimes', 'string', 'min:8', 'confirmed'],
+            'password_confirmation' => ['required_with:password', 'string'],
+        ]);
 
+        $user = $request->user();
+
+        if ($request->has('password')) {
+            if (!Hash::check($request->current_password, $user->password)) {
+                throw ValidationException::withMessages([
+                    'current_password' => ['La contraseña actual no es correcta.'],
+                ]);
+            }
+        }
+
+        if ($request->has('name'))     $user->name     = $data['name'];
+        if ($request->has('password')) $user->password = $data['password'];
+
+        $user->save();
+
+        return response()->json($user);
+    }
+
+    public function updateAvatar(Request $request)
+    {
+        $request->validate([
+            'avatar' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+        ]);
+
+        $user = $request->user();
+
+        if ($user->avatar) {
+            Storage::disk('public')->delete($user->avatar);
+        }
+
+        $ext  = $request->file('avatar')->getClientOriginalExtension();
+        $path = $request->file('avatar')->storeAs('avatars', "{$user->id}.{$ext}", 'public');
+
+        $user->avatar = $path;
+        $user->save();
+
+        return response()->json($user);
+    }
 }
 

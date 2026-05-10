@@ -7,7 +7,8 @@ export const useAuthStore = defineStore('auth', () => {
   const user = ref(null) // usuario autenticado
   const token = ref(localStorage.getItem('token')) // token de Sanctum (persiste en localStorage)
 
-  const isAuthenticated = computed(() => !!token.value) // indica si el usuario está autenticado (token existe)
+  const isAuthenticated = computed(() => !!token.value)
+  const isTeacher       = computed(() => user.value?.role === 'teacher')
 
   async function login(credentials) {
     try {
@@ -49,12 +50,12 @@ export const useAuthStore = defineStore('auth', () => {
 
   async function fetchUser() {
     try {
-      const response = await api.get('/me') 
+      const response = await api.get('/users/me')
       user.value = response
     } catch (error) {
       throw error
     }
   }
 
-  return { user, token, isAuthenticated, login, register, logout, fetchUser }
+  return { user, token, isAuthenticated, isTeacher, login, register, logout, fetchUser }
 })
