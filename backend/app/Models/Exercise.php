@@ -2,18 +2,17 @@
 
 namespace App\Models;
 
+use App\Enums\Difficulty;
 use App\Enums\ProgrammingLanguage;
+use App\Enums\UserRole;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use App\Enums\Difficulty;
 use Spatie\Translatable\HasTranslations;
 
 class Exercise extends Model
 {
-
-
     use HasTranslations;
 
     public array $translatable = ['title', 'description', 'short_description'];
@@ -57,8 +56,7 @@ class Exercise extends Model
 
     public function scopeVisibleTo(Builder $query, ?User $user): Builder
     {
-        // Sin sesión o alumno: solo ejercicios publicados
-        if (!$user || $user->role !== 'teacher') {
+        if (!$user || $user->role !== UserRole::Teacher) {
             return $query->where('is_published', true);
         }
 

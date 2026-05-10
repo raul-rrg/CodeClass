@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Enums\UserRole;
 use App\Models\Exercise;
 use App\Models\User;
 
@@ -15,13 +16,13 @@ class ExercisePolicy
 
     public function view(User $user, Exercise $exercise): bool
     {
-        // Ejercicio publicado: cualquier usuario puede verlo
-        if ($exercise->is_published) {
+        // Creador siempre puede ver su propio ejercicio
+        if ($user->role === UserRole::Teacher && $user->id === $exercise->user_id) {
             return true;
         }
 
-        // Ejercicio no publicado: solo el profesor que lo creó puede verlo
-        return $user->role === 'teacher' && $user->id === $exercise->user_id;
+        // is_published controla solo el listado público (scopeVisibleTo), no el acceso directo
+        return true;
     }
 
     public function create(User $user): bool

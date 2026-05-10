@@ -19,11 +19,14 @@ Route::prefix('v1')->group(function () {
         Route::post('/logout',    [AuthController::class, 'logout']);
         Route::get('/users/me',   [AuthController::class, 'me']);
 
-        // Ejercicios — escritura solo profesores
+        // Ejercicios — escritura y recursos propios solo profesores
         Route::middleware('role:teacher')->group(function () {
             Route::post('/exercises',              [ExerciseController::class, 'store']);
             Route::put('/exercises/{exercise}',    [ExerciseController::class, 'update']);
             Route::delete('/exercises/{exercise}', [ExerciseController::class, 'destroy']);
+            Route::get('/users/me/exercises',                    [ExerciseController::class, 'myExercises']);
+            Route::get('/users/me/exercises/stats',              [ExerciseController::class, 'myExercisesStats']);
+            Route::get('/exercises/{exercise}/detail-stats',     [ExerciseController::class, 'exerciseDetailStats']);
         });
 
         // Run — ejecutar sin guardar (solo test cases visibles)
