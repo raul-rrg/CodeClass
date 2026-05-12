@@ -1,0 +1,54 @@
+services:
+  db:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: codeclass
+      MYSQL_USER: codeclass_app
+      MYSQL_PASSWORD: codeclass_pass
+      MYSQL_ROOT_PASSWORD: root_secret
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    environment:
+      APP_KEY: base64:sAgo6Dm9YLbdIQBrTq8/H8A9haypVuq3X6HFtGoaNWM=
+      APP_ENV: production
+      APP_DEBUG: "false"
+      APP_URL: http://localhost:8000
+      DB_CONNECTION: mysql
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_DATABASE: codeclass
+      DB_USERNAME: codeclass_app
+      DB_PASSWORD: codeclass_pass
+      SESSION_DRIVER: database
+      CACHE_STORE: database
+      QUEUE_CONNECTION: database
+      JUDGE0_URL: ${JUDGE0_URL:-http://localhost:2358}
+      VIEW_COMPILED_PATH: /app/storage/framework/views
+      WEB_DOCUMENT_ROOT: /app/public
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: http://localhost:8000/api/v1
+    restart: unless-stopped
+    ports:
+      - "5173:4173"
+
+volumes:
+  db_data:
