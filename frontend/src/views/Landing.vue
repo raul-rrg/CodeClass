@@ -15,7 +15,7 @@
                 <!-- Subtítulo rotante -->
                 <div class="mb-8">
                     <p class="text-2xl text-subtitle">
-                        Pensado para
+                        {{ $t('landing.typed_prefix') }}
                         <span class="relative inline-block">
                             <span class="bg-linear-to-r from-accent to-cyan-400 bg-clip-text text-transparent font-bold text-glow-blue border-b-2 border-accent/50">
                                 <span ref="typedEl" />
@@ -26,14 +26,12 @@
 
                 <!-- Descripción -->
                 <p class="font-light text-xl text-body max-w-3xl mx-auto mb-6 leading-relaxed">
-                    La plataforma donde profesores crean retos de programación
-                    <br />
-                    y estudiantes los resuelven con corrección automática al instante.
+                    {{ $t('landing.description') }}
                 </p>
 
                 <!-- Tagline -->
                 <p class="text-lg text-accent/80 mb-12 italic">
-                    Diseñado para enseñar. Construido para aprender.
+                    {{ $t('landing.tagline') }}
                 </p>
 
                 <!-- CTA Buttons -->
@@ -42,13 +40,13 @@
                         to="/register"
                         class="px-16 py-5 bg-primary text-title font-bold text-xs uppercase tracking-[3px] hover:bg-blue-600 transition-all shadow-lg hover:shadow-primary/50"
                     >
-                        Empezar gratis
+                        {{ $t('landing.cta_register') }}
                     </RouterLink>
                     <RouterLink
                         to="/challenges"
                         class="px-16 py-5 border border-white/10 text-title font-bold text-xs uppercase tracking-[3px] hover:border-white/20 transition-all"
                     >
-                        Ver ejercicios
+                        {{ $t('landing.cta_challenges') }}
                     </RouterLink>
                 </div>
 
@@ -61,14 +59,16 @@
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { useI18n } from 'vue-i18n'
 import Typed from 'typed.js'
 
+const { tm } = useI18n()
 const typedEl = ref(null)
 let typedInstance
 
 onMounted(() => {
     typedInstance = new Typed(typedEl.value, {
-        strings: ['estudiantes', 'profesores', 'futuros devs', 'coders', 'programadores'],
+        strings: tm('landing.typed_strings'),
         typeSpeed: 80,
         backSpeed: 50,
         backDelay: 1500,

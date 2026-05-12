@@ -1,15 +1,15 @@
 <template>
 
-    <div class="min-h-[calc(100vh-80px)] flex items-center justify-center px-4 py-12">
+    <div class="min-h-full flex items-center justify-center px-4 py-12">
         <div class="w-full max-w-md">
 
             <!-- Header -->
             <div class="text-center mb-8">
                 <h1 class="font-bold text-3xl text-title mb-2">
-                    Crear Cuenta
+                    {{ $t('register.title') }}
                 </h1>
                 <p class="text-body">
-                    Únete a la comunidad CodeClass
+                    {{ $t('register.subtitle') }}
                 </p>
             </div>
 
@@ -20,7 +20,7 @@
                     <!-- Nombre -->
                     <div>
                         <label class="block text-sm text-subtitle mb-2">
-                            Nombre Completo
+                            {{ $t('register.name_label') }}
                         </label>
                         <div class="relative">
                             <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted" viewBox="0 0 24 24"
@@ -29,7 +29,7 @@
                                 <circle cx="12" cy="8" r="4" />
                                 <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
                             </svg>
-                            <input v-model="name" type="text" placeholder="Juan Pérez"
+                            <input v-model="name" type="text" :placeholder="$t('register.name_placeholder')"
                                 class="w-full bg-base border border-white/10 text-title pl-11 pr-4 py-3 focus:outline-none focus:border-primary/50 transition-colors" />
                         </div>
                     </div>
@@ -37,7 +37,7 @@
                     <!-- Email -->
                     <div>
                         <label class="block text-sm text-subtitle mb-2">
-                            Correo Electrónico
+                            {{ $t('register.email_label') }}
                         </label>
                         <div class="relative">
                             <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted" viewBox="0 0 24 24"
@@ -46,7 +46,7 @@
                                 <rect width="20" height="16" x="2" y="4" rx="2" />
                                 <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
                             </svg>
-                            <input v-model="email" type="text" placeholder="tu@email.com"
+                            <input v-model="email" type="text" :placeholder="$t('register.email_placeholder')"
                                 :class="['w-full bg-base border text-title pl-11 pr-4 py-3 focus:outline-none transition-colors',
                                     errorEmail ? 'border-red-500/60 focus:border-red-500/80' : 'border-white/10 focus:border-primary/50']" />
                         </div>
@@ -56,7 +56,7 @@
                     <!-- Contraseña -->
                     <div>
                         <label class="block text-sm text-subtitle mb-2">
-                            Contraseña
+                            {{ $t('register.password_label') }}
                         </label>
                         <div class="relative">
                             <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted" viewBox="0 0 24 24"
@@ -86,7 +86,7 @@
                     <!-- Confirmar Contraseña -->
                     <div>
                         <label class="block text-sm text-subtitle mb-2">
-                            Confirmar Contraseña
+                            {{ $t('register.confirm_password_label') }}
                         </label>
                         <div class="relative">
                             <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted" viewBox="0 0 24 24"
@@ -117,19 +117,19 @@
 
                     <!-- Rol -->
                     <div>
-                        <p class="text-sm text-subtitle mb-2">Me registro como</p>
+                        <p class="text-sm text-subtitle mb-2">{{ $t('register.role_label') }}</p>
                         <div class="grid grid-cols-2">
                             <button type="button" @click="role = 'student'" :class="role === 'student'
                                 ? 'bg-primary text-title'
                                 : 'bg-transparent border border-white/10 text-subtitle hover:border-primary/40'"
                                 class="py-3 text-sm font-bold transition-colors">
-                                Estudiante
+                                {{ $t('register.role_student') }}
                             </button>
                             <button type="button" @click="role = 'teacher'" :class="role === 'teacher'
                                 ? 'bg-primary text-title'
                                 : 'bg-transparent border border-white/10 text-subtitle hover:border-primary/40'"
                                 class="py-3 text-sm font-bold transition-colors">
-                                Profesor
+                                {{ $t('register.role_teacher') }}
                             </button>
                         </div>
                     </div>
@@ -140,7 +140,7 @@
                     <!-- Submit -->
                     <button type="submit" :disabled="!canSubmit || loading"
                         :class="['w-full py-3 px-6 font-bold text-sm transition-colors', canSubmit && !loading ? 'bg-primary text-title hover:bg-primary/80' : 'bg-primary/30 text-title/40 cursor-not-allowed']">
-                        {{ loading ? 'Creando cuenta...' : 'Crear Cuenta' }}
+                        {{ loading ? $t('register.submitting') : $t('register.submit') }}
                     </button>
 
                 </form>
@@ -148,9 +148,9 @@
                 <!-- Login Link -->
                 <div class="mt-6 text-center">
                     <p class="text-sm text-body">
-                        ¿Ya tienes una cuenta?
+                        {{ $t('register.have_account') }}
                         <RouterLink to="/login" class="text-accent hover:text-accent/70 transition-colors">
-                            Inicia sesión aquí
+                            {{ $t('register.login_link') }}
                         </RouterLink>
                     </p>
                 </div>
@@ -165,9 +165,11 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '@/stores/auth'
 
 // --- Servicios ---
+const { t } = useI18n()
 const router = useRouter()
 const authStore = useAuthStore()
 
@@ -196,9 +198,9 @@ const canSubmit = computed(() =>
 )
 
 function validate() {
-    errorEmail.value = EMAIL_REGEX.test(email.value) ? '' : 'Introduce un correo válido.'
-    if (password.value.length < 8) errorPassword.value = 'La contraseña debe tener al menos 8 caracteres.'
-    else if (password.value !== password_confirmation.value) errorPassword.value = 'Las contraseñas no coinciden.'
+    errorEmail.value = EMAIL_REGEX.test(email.value) ? '' : t('register.email_invalid')
+    if (password.value.length < 8) errorPassword.value = t('register.password_min')
+    else if (password.value !== password_confirmation.value) errorPassword.value = t('register.password_mismatch')
     else errorPassword.value = ''
     return !errorEmail.value && !errorPassword.value
 }
@@ -213,8 +215,8 @@ async function submit() {
         await authStore.register({ name: name.value, email: email.value, password: password.value, password_confirmation: password_confirmation.value, role: role.value })
         router.push('/challenges')
     } catch (err) {
-        if (err?.errors?.email) errorEmail.value = 'Este correo ya está registrado.'
-        else serverError.value = err?.message || 'Error al registrar'
+        if (err?.errors?.email) errorEmail.value = t('register.email_taken')
+        else serverError.value = err?.message || t('register.error')
     } finally {
         loading.value = false
     }

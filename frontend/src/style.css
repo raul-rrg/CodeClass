@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
 @import 'tailwindcss';
+@plugin '@tailwindcss/typography';
 
 @theme {
   /* Background */
@@ -20,6 +21,23 @@
 
   /* Font */
   --font-sans: 'Space Grotesk', sans-serif;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(255 255 255 / 0.1) transparent;
+  &::-webkit-scrollbar       { width: 4px; height: 4px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb {
+    background-color: rgb(255 255 255 / 0.1);
+    border-radius: 9999px;
+    &:hover { background-color: rgb(255 255 255 / 0.25); }
+  }
 }
 
 body {
@@ -60,5 +78,17 @@ body {
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(12px); }
   to   { opacity: 1; transform: translateY(0); }
+}
+
+@utility scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(255 255 255 / 0.1) transparent;
+  &::-webkit-scrollbar       { width: 4px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb {
+    background-color: rgb(255 255 255 / 0.1);
+    border-radius: 9999px;
+    &:hover { background-color: rgb(255 255 255 / 0.25); }
+  }
 }
 

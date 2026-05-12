@@ -1,6 +1,6 @@
 <template>
 
-    <div class="min-h-[calc(100vh-80px)] flex items-center justify-center px-4 py-12">
+    <div class="min-h-full flex items-center justify-center px-4 py-12">
         <div class="w-full max-w-md">
 
             <!-- Header -->
@@ -16,10 +16,10 @@
                     </div>
                 </div> -->
                 <h1 class="font-bold text-3xl text-title mb-2">
-                    Iniciar Sesión
+                    {{ $t('login.title') }}
                 </h1>
                 <p class="text-body">
-                    Accede a tu cuenta de CodeClass
+                    {{ $t('login.subtitle') }}
                 </p>
             </div>
 
@@ -30,7 +30,7 @@
                     <!-- Email -->
                     <div>
                         <label class="block text-sm text-subtitle mb-2">
-                            Correo Electrónico
+                            {{ $t('login.email_label') }}
                         </label>
                         <div class="relative">
                             <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted"
@@ -39,7 +39,7 @@
                                 <rect width="20" height="16" x="2" y="4" rx="2" />
                                 <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
                             </svg>
-                            <input type="text" v-model="email" placeholder="tu@correo.com"
+                            <input type="text" v-model="email" :placeholder="$t('login.email_placeholder')"
                                 :class="['w-full bg-base border text-title pl-11 pr-4 py-3 focus:outline-none transition-colors', errors.email ? 'border-red-500/70 focus:border-red-500' : 'border-white/10 focus:border-primary/50']" />
                         </div>
                         <p v-if="errors.email" class="text-xs text-red-400 mt-1">{{ errors.email }}</p>
@@ -48,7 +48,7 @@
                     <!-- Password -->
                     <div>
                         <label class="block text-sm text-subtitle mb-2">
-                            Contraseña
+                            {{ $t('login.password_label') }}
                         </label>
                         <div class="relative">
                             <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted"
@@ -86,7 +86,7 @@
                     <!-- Submit -->
                     <button type="submit" :disabled="!canSubmit"
                         :class="['w-full py-3 px-6 font-bold text-sm transition-colors', canSubmit ? 'bg-primary text-title hover:bg-primary/80' : 'bg-primary/30 text-title/40 cursor-not-allowed']">
-                        Iniciar Sesión
+                        {{ $t('login.submit') }}
                     </button>
 
                 </form>
@@ -94,9 +94,9 @@
                 <!-- Register Link -->
                 <div class="mt-6 text-center">
                     <p class="text-sm text-body">
-                        ¿No tienes una cuenta?
+                        {{ $t('login.no_account') }}
                         <RouterLink to="/register" class="text-accent hover:text-accent/70 transition-colors">
-                            Regístrate aquí
+                            {{ $t('login.register_link') }}
                         </RouterLink>
                     </p>
                 </div>
@@ -112,7 +112,10 @@
 
 import { ref, reactive, watch, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '@/stores/auth'
+
+const { t } = useI18n()
 
 // --- Estado ---
 const email = ref('')
@@ -136,7 +139,7 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 function validate() {
     errors.email = ''
-    if (!EMAIL_REGEX.test(email.value)) errors.email = 'Introduce un correo válido.'
+    if (!EMAIL_REGEX.test(email.value)) errors.email = t('login.email_invalid')
     return !errors.email
 }
 
@@ -149,7 +152,7 @@ async function submit() {
         await authStore.login({ email: email.value, password: password.value })
         router.push('/challenges')
     } catch {
-        serverError.value = 'Credenciales inválidas.'
+        serverError.value = t('login.credentials_invalid')
     }
 }
 

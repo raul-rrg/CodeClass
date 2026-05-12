@@ -53,6 +53,36 @@ export const api = {
   post: (endpoint, data) => request('POST', endpoint, data),
   put: (endpoint, data) => request('PUT', endpoint, data),
   delete: (endpoint) => request('DELETE', endpoint),
+
+  // Función específica para uploads con FormData, sin 'Content-Type' y manejo de errores similar a request()
+  upload: async (endpoint, formData) => {
+    const token = localStorage.getItem('token')
+    let response
+    try {
+      response = await fetch(`${BASE_URL}${endpoint}`, {
+        method: 'POST',
+        headers: { ...(token && { Authorization: `Bearer ${token}` }) },
+        body: formData,
+      })
+    } catch {
+      throw new Error('No se pudo conectar con el servidor. Comprueba tu conexión.')
+    }
+
+    if (response.status === 401) {
+      localStorage.removeItem('token')
+      window.location.href = '/login'
+      throw new Error('UNAUTHORIZED')
+    }
+
+    if (!response.ok) {
+      const contentType = response.headers.get('Content-Type') ?? ''
+      if (contentType.includes('application/json')) throw await response.json()
+      throw new Error(`Error ${response.status}: algo salió mal.`)
+    }
+
+    const text = await response.text()
+    return text ? JSON.parse(text) : null
+  },
 }
 
 export default BASE_URL
