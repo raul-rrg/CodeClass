@@ -8,6 +8,7 @@ use App\Enums\UserRole;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Translatable\HasTranslations;
 
@@ -16,6 +17,7 @@ class Exercise extends Model
     use HasTranslations;
 
     public array $translatable = ['title', 'description', 'short_description'];
+
 
     /**
      * Los campos que se pueden rellenar masivamente.
@@ -57,11 +59,22 @@ class Exercise extends Model
     public function scopeVisibleTo(Builder $query, ?User $user): Builder
     {
         if (!$user || $user->role !== UserRole::Teacher) {
-            return $query->where('is_published', true);
+            return $query->where('is_published', true)
+                ->whereDoesntHave('tournaments', fn($q) => $q->where('starts_at', '>', now()));
         }
 
-        // Profesor: sus propios ejercicios (publicados o no) + el resto publicados
-        return $query->where('is_published', true)->orWhere('user_id', $user->id);
+        // Profesor: sus propios ejercicios + publicados ajenos, pero nunca ejercicios de torneos upcoming ajenos
+        return $query->where(function ($q) use ($user) {
+            $q->where('is_published', true)->orWhere('user_id', $user->id);
+        })->where(function ($q) use ($user) {
+            $q->whereDoesntHave('tournaments', fn($t) => $t->where('starts_at', '>', now()))
+              ->orWhere('user_id', $user->id);
+        });
+    }
+
+    public function tournaments(): BelongsToMany
+    {
+        return $this->belongsToMany(Tournament::class, 'tournament_exercises');
     }
 
     // Un ejercicio pertenece a un profesor

@@ -21,6 +21,15 @@ class ExercisePolicy
             return true;
         }
 
+        $tournament = $exercise->tournaments()->first();
+
+        if ($tournament) {
+            if ($tournament->status === 'upcoming') return false;
+            if ($tournament->status === 'active') {
+                return $tournament->participants()->where('user_id', $user->id)->exists();
+            }
+        }
+
         // is_published controla solo el listado público (scopeVisibleTo), no el acceso directo
         return true;
     }

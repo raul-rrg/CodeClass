@@ -17,7 +17,21 @@ class SubmissionController extends Controller
 
     public function store(StoreSubmissionRequest $request, Exercise $exercise)
     {
-        $user = $request->user();
+        $user       = $request->user();
+        $tournament = $exercise->tournaments()->first();
+
+        if ($tournament) {
+            if ($tournament->status === 'upcoming') {
+                return response()->json(['message' => 'El torneo aún no ha comenzado.'], 403);
+            }
+            if ($tournament->status === 'active') {
+                $isParticipant = $tournament->participants()->where('user_id', $user->id)->exists();
+                if (!$isParticipant) {
+                    return response()->json(['message' => 'No estás inscrito en este torneo.'], 403);
+                }
+            }
+            // finished: cualquier autenticado puede enviar, ya no cuenta para el torneo
+        }
 
         $submission = Submission::create([
             'user_id'     => $user->id,
