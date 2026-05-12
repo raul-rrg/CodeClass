@@ -30,5 +30,8 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $this->call(ExerciseSeeder::class);
+        $this->call(LeaderboardSeeder::class);
+        $this->call(TournamentSeeder::class);
+        $this->call(SubmissionSeeder::class);
     }
 }

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Models\Tournament;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -54,7 +56,38 @@ class LeaderboardController extends Controller
             ->groupBy('s.user_id', 's.exercise_id', 'e.difficulty');
     }
 
+
+    // Leaderboard de torneo: similar al global pero filtrando por ejercicios del torneo y usuarios participantes,
+    public function tournament(Request $request, Tournament $tournament)
+    {
+        $this->authorize('viewLeaderboard', $tournament);
+
+        $exerciseIds    = $tournament->exercises()->pluck('exercises.id');
+        $participantIds = $tournament->participants()->pluck('users.id');
+
+        $scoringSubquery = $this->buildScoringSubquery($participantIds, $exerciseIds, $tournament);
+
+        $rows = DB::table(DB::raw("({$scoringSubquery->toSql()}) as us"))
+            ->mergeBindings($scoringSubquery)
+            ->join('users', 'users.id', '=', 'us.user_id')
+            ->select(
+                'us.user_id',
+                'users.name',
+                'users.avatar',
+                DB::raw('COUNT(*) as solved'),
+                DB::raw('SUM(us.points) as total_points'),
+                DB::raw('MAX(us.first_accepted_at) as last_accepted_at')
+            )
+            ->groupBy('us.user_id', 'users.name', 'users.avatar')
+            ->orderByDesc('total_points')
+            ->orderBy('last_accepted_at')
+            ->get();
+
+        return response()->json(['data' => $this->formatRows($rows, true)]);
+    }
+
     // CASE SQL reutilizable en leaderboard global y de torneo
+    // Asigna puntos según dificultad del ejercicio: easy=20, medium=30, hard=40, insane=50
     public static function pointsCase(): string
     {
         return "CASE e.difficulty
@@ -67,16 +100,33 @@ class LeaderboardController extends Controller
     }
 
 
-    // Formatea resultado para respuesta API: posición, user_id, name, avatar_url, solved, total_points
-    private function formatRows(\Illuminate\Support\Collection $rows): \Illuminate\Support\Collection
+    private function buildScoringSubquery($participantIds, $exerciseIds, Tournament $tournament)
     {
-        return $rows->values()->map(fn($row, $i) => [
-            'position'     => $i + 1,
-            'user_id'      => $row->user_id,
-            'name'         => $row->name,
-            'avatar_url'   => $row->avatar ? Storage::disk('public')->url($row->avatar) : null,
-            'solved'       => (int) $row->solved,
-            'total_points' => (int) $row->total_points,
-        ]);
+        return DB::table('submissions as s')
+            ->join('exercises as e', 'e.id', '=', 's.exercise_id')
+            ->whereIn('s.user_id', $participantIds)
+            ->whereIn('s.exercise_id', $exerciseIds)
+            ->where('s.status', 'accepted')
+            ->whereBetween('s.created_at', [$tournament->starts_at, $tournament->ends_at])
+            ->select('s.user_id', 's.exercise_id', DB::raw(self::pointsCase()), DB::raw('MIN(s.created_at) as first_accepted_at'))
+            ->groupBy('s.user_id', 's.exercise_id', 'e.difficulty');
+    }
+
+    private function formatRows(\Illuminate\Support\Collection $rows, bool $withTime = false): \Illuminate\Support\Collection
+    {
+        return $rows->values()->map(function ($row, $i) use ($withTime) {
+            $entry = [
+                'position'     => $i + 1,
+                'user_id'      => $row->user_id,
+                'name'         => $row->name,
+                'avatar_url'   => $row->avatar ? Storage::disk('public')->url($row->avatar) : null,
+                'solved'       => (int) $row->solved,
+                'total_points' => (int) $row->total_points,
+            ];
+            if ($withTime) {
+                $entry['last_accepted_at'] = $row->last_accepted_at;
+            }
+            return $entry;
+        });
     }
 }
