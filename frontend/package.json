@@ -10,12 +10,23 @@
     "format": "prettier --write --experimental-cli src/"
   },
   "dependencies": {
+    "@fontsource/cascadia-code": "^5.2.3",
+    "@fontsource/jetbrains-mono": "^5.2.8",
+    "@guolao/vue-monaco-editor": "^1.6.0",
+    "@tailwindcss/typography": "^0.5.19",
+    "apexcharts": "^5.10.6",
+    "canvas-confetti": "^1.9.4",
+    "dompurify": "^3.4.0",
+    "marked": "^18.0.2",
+    "monaco-themes": "^0.4.8",
     "pinia": "^3.0.4",
     "prism-themes": "^1.9.0",
     "prismjs": "^1.30.0",
     "typed.js": "^3.0.0",
     "vue": "^3.5.29",
-    "vue-router": "^5.0.4"
+    "vue-i18n": "^11.4.0",
+    "vue-router": "^5.0.4",
+    "vue3-apexcharts": "^1.11.1"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.2.2",
