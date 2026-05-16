@@ -129,6 +129,18 @@ class SubmissionController extends Controller
         // El profesor puede ver cualquier submission, el alumno solo los suyos (ver SubmissionPolicy).
         $this->authorize('view', $submission);
 
-        return response()->json($submission->load('submissionResults'));
+        $submission->load(['submissionResults' => function ($q) {
+            $q->with('testCase:id,is_hidden,input,expected_output');
+        }]);
+
+        // Para casos ocultos que pasaron, no revelar input ni expected_output (evita filtrar la solución)
+        foreach ($submission->submissionResults as $result) {
+            if ($result->testCase?->is_hidden && $result->passed) {
+                $result->testCase->input = null;
+                $result->testCase->expected_output = null;
+            }
+        }
+
+        return response()->json($submission);
     }
 }

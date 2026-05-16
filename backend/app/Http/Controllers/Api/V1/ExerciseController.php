@@ -19,7 +19,7 @@ class ExerciseController extends Controller
     public function index(Request $request)
     {
         $user  = Auth::guard('sanctum')->user();
-        $query = Exercise::visibleTo($user)->with('user:id,name,avatar');
+        $query = Exercise::visibleTo($user)->with('user:id,name,avatar')->latest();
 
         if ($request->filled('difficulty')) {
             $query->where('difficulty', $request->difficulty);
