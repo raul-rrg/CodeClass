@@ -1,0 +1,124 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Python",
+  "scopeName": "source.python",
+  "fileTypes": ["py", "pyw"],
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#triple-strings" },
+    { "include": "#strings" },
+    { "include": "#decorators" },
+    { "include": "#function-def" },
+    { "include": "#class-def" },
+    { "include": "#keywords" },
+    { "include": "#builtins" },
+    { "include": "#self" },
+    { "include": "#constants" },
+    { "include": "#numbers" },
+    { "include": "#operators" }
+  ],
+  "repository": {
+    "comments": {
+      "name": "comment.line.number-sign.python",
+      "match": "#.*$"
+    },
+    "triple-strings": {
+      "patterns": [
+        {
+          "name": "string.quoted.triple.double.python",
+          "begin": "\"\"\"",
+          "end": "\"\"\""
+        },
+        {
+          "name": "string.quoted.triple.single.python",
+          "begin": "'''",
+          "end": "'''"
+        },
+        {
+          "name": "string.quoted.triple.double.python",
+          "begin": "f\"\"\"",
+          "end": "\"\"\""
+        },
+        {
+          "name": "string.quoted.triple.single.python",
+          "begin": "f'''",
+          "end": "'''"
+        }
+      ]
+    },
+    "strings": {
+      "patterns": [
+        {
+          "name": "string.quoted.double.python",
+          "begin": "f?\"",
+          "end": "\""
+        },
+        {
+          "name": "string.quoted.single.python",
+          "begin": "f?'",
+          "end": "'"
+        }
+      ]
+    },
+    "decorators": {
+      "match": "@[\\w\\.]+\\b",
+      "name": "entity.name.function.decorator.python"
+    },
+    "function-def": {
+      "match": "(?<=def )([a-zA-Z_][a-zA-Z0-9_]*)\\b",
+      "captures": {
+        "1": { "name": "entity.name.function.python" }
+      }
+    },
+    "class-def": {
+      "match": "(?<=class )([a-zA-Z_][a-zA-Z0-9_]*)\\b",
+      "captures": {
+        "1": { "name": "entity.name.class.python" }
+      }
+    },
+    "keywords": {
+      "patterns": [
+        {
+          "name": "keyword.control.python",
+          "match": "\\b(if|elif|else|for|while|break|continue|return|pass|try|except|finally|raise|with|as|yield|async|await|lambda|not|and|or|in|is|del|assert|global|nonlocal)\\b"
+        },
+        {
+          "name": "storage.type.python",
+          "match": "\\b(def|class|import|from)\\b"
+        }
+      ]
+    },
+    "builtins": {
+      "name": "support.function.builtin.python",
+      "match": "\\b(print|len|range|type|isinstance|issubclass|int|str|float|list|dict|tuple|set|frozenset|bool|abs|max|min|sum|sorted|reversed|enumerate|zip|map|filter|input|open|repr|id|hash|dir|vars|getattr|setattr|hasattr|callable|iter|next|super|object|property|staticmethod|classmethod|round|pow|divmod|hex|oct|bin|chr|ord|format|bytes|bytearray|memoryview|complex|slice|all|any)\\b"
+    },
+    "self": {
+      "name": "variable.language.self.python",
+      "match": "\\bself\\b"
+    },
+    "constants": {
+      "name": "constant.language.python",
+      "match": "\\b(True|False|None)\\b"
+    },
+    "numbers": {
+      "patterns": [
+        {
+          "name": "constant.numeric.float.python",
+          "match": "\\b\\d+\\.\\d*([eE][+-]?\\d+)?\\b"
+        },
+        {
+          "name": "constant.numeric.hex.python",
+          "match": "\\b0[xX][0-9a-fA-F]+\\b"
+        },
+        {
+          "name": "constant.numeric.integer.python",
+          "match": "\\b\\d+\\b"
+        }
+      ]
+    },
+    "operators": {
+      "name": "keyword.operator.python",
+      "match": "\\+|\\-|\\*|\\/|%|\\*\\*|\\/\\/|==|!=|<=|>=|<|>|=|\\+=|\\-=|\\*=|\\/=|%=|&|\\||\\^|~|<<|>>"
+    }
+  }
+}

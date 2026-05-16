@@ -1,0 +1,19 @@
+{
+  "languages": [
+    {
+      "name": "python",
+      "scopeName": "source.python",
+      "grammar": "textmate/grammars/python.tmLanguage.json"
+    },
+    {
+      "name": "javascript",
+      "scopeName": "source.js",
+      "grammar": "textmate/grammars/javascript.tmLanguage.json"
+    },
+    {
+      "name": "java",
+      "scopeName": "source.java",
+      "grammar": "textmate/grammars/java.tmLanguage.json"
+    }
+  ]
+}

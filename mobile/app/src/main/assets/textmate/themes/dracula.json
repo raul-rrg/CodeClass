@@ -1,0 +1,149 @@
+{
+  "name": "Dracula",
+  "type": "dark",
+  "colors": {
+    "editor.background": "#282a36",
+    "editor.foreground": "#f8f8f2",
+    "editorLineNumber.foreground": "#6272a4",
+    "editorLineNumber.activeForeground": "#f8f8f2",
+    "editor.selectionBackground": "#44475a",
+    "editor.lineHighlightBackground": "#44475a4d",
+    "editorCursor.foreground": "#f8f8f0",
+    "editorWhitespace.foreground": "#3B3A32",
+    "editorIndentGuide.background": "#3B3A32",
+    "editor.selectionHighlightBorder": "#222218"
+  },
+  "tokenColors": [
+    {
+      "name": "Comment",
+      "scope": ["comment", "punctuation.definition.comment"],
+      "settings": { "foreground": "#6272a4", "fontStyle": "italic" }
+    },
+    {
+      "name": "String",
+      "scope": [
+        "string",
+        "string.quoted",
+        "string.quoted.single",
+        "string.quoted.double",
+        "string.quoted.triple",
+        "string.template"
+      ],
+      "settings": { "foreground": "#f1fa8c" }
+    },
+    {
+      "name": "String escape",
+      "scope": ["constant.character.escape", "text.html constant.character.entity.named"],
+      "settings": { "foreground": "#ff79c6" }
+    },
+    {
+      "name": "Keyword",
+      "scope": [
+        "keyword",
+        "keyword.control",
+        "keyword.operator.logical",
+        "keyword.other"
+      ],
+      "settings": { "foreground": "#ff79c6" }
+    },
+    {
+      "name": "Storage",
+      "scope": ["storage", "storage.type", "storage.modifier"],
+      "settings": { "foreground": "#ff79c6" }
+    },
+    {
+      "name": "Import / from",
+      "scope": ["keyword.control.import", "keyword.control.from"],
+      "settings": { "foreground": "#ff79c6" }
+    },
+    {
+      "name": "Constant",
+      "scope": ["constant.language", "constant.other"],
+      "settings": { "foreground": "#bd93f9" }
+    },
+    {
+      "name": "Number",
+      "scope": ["constant.numeric"],
+      "settings": { "foreground": "#bd93f9" }
+    },
+    {
+      "name": "Boolean",
+      "scope": ["constant.language.boolean"],
+      "settings": { "foreground": "#bd93f9" }
+    },
+    {
+      "name": "None / null / undefined",
+      "scope": ["constant.language.null", "constant.language.undefined", "constant.language.none"],
+      "settings": { "foreground": "#bd93f9" }
+    },
+    {
+      "name": "Built-in functions",
+      "scope": [
+        "support.function.builtin",
+        "support.function",
+        "support.type.builtin"
+      ],
+      "settings": { "foreground": "#8be9fd", "fontStyle": "italic" }
+    },
+    {
+      "name": "Function definition name",
+      "scope": ["entity.name.function", "meta.function entity.name.function"],
+      "settings": { "foreground": "#50fa7b" }
+    },
+    {
+      "name": "Class name",
+      "scope": ["entity.name.type", "entity.name.class", "entity.name.type.class"],
+      "settings": { "foreground": "#8be9fd" }
+    },
+    {
+      "name": "Decorator / annotation",
+      "scope": [
+        "entity.name.function.decorator",
+        "entity.name.decorator",
+        "meta.decorator",
+        "punctuation.definition.decorator"
+      ],
+      "settings": { "foreground": "#50fa7b", "fontStyle": "italic" }
+    },
+    {
+      "name": "Variable",
+      "scope": ["variable", "variable.other", "variable.parameter"],
+      "settings": { "foreground": "#f8f8f2" }
+    },
+    {
+      "name": "Self / this",
+      "scope": ["variable.language.self", "variable.language.this"],
+      "settings": { "foreground": "#bd93f9", "fontStyle": "italic" }
+    },
+    {
+      "name": "Operator",
+      "scope": ["keyword.operator", "keyword.operator.arithmetic"],
+      "settings": { "foreground": "#ff79c6" }
+    },
+    {
+      "name": "Punctuation",
+      "scope": ["punctuation", "punctuation.definition", "punctuation.separator"],
+      "settings": { "foreground": "#f8f8f2" }
+    },
+    {
+      "name": "Tag name (HTML/XML)",
+      "scope": ["entity.name.tag"],
+      "settings": { "foreground": "#ff79c6" }
+    },
+    {
+      "name": "Attribute name",
+      "scope": ["entity.other.attribute-name"],
+      "settings": { "foreground": "#50fa7b" }
+    },
+    {
+      "name": "Invalid",
+      "scope": ["invalid"],
+      "settings": { "foreground": "#ff5555" }
+    },
+    {
+      "name": "Regex",
+      "scope": ["string.regexp"],
+      "settings": { "foreground": "#f1fa8c" }
+    }
+  ]
+}
