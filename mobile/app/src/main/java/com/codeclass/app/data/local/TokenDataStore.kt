@@ -17,19 +17,22 @@ private val Context.dataStore by preferencesDataStore(name = "auth")
 class TokenDataStore(private val context: Context) {
 
     companion object {
-        private val TOKEN_KEY = stringPreferencesKey("token") // clave para el token Sanctum
+        private val TOKEN_KEY = stringPreferencesKey("token")
+        private val ROLE_KEY  = stringPreferencesKey("role")
     }
 
-    // Flow reactivo — emite el token actual o null si no hay sesión
     val token: Flow<String?> = context.dataStore.data.map { it[TOKEN_KEY] }
+    val role: Flow<String?>  = context.dataStore.data.map { it[ROLE_KEY] }
 
-    // Persiste el token tras login/register
     suspend fun saveToken(token: String) {
         context.dataStore.edit { it[TOKEN_KEY] = token }
     }
 
-    // Borra el token al hacer logout
+    suspend fun saveRole(role: String) {
+        context.dataStore.edit { it[ROLE_KEY] = role }
+    }
+
     suspend fun clearToken() {
-        context.dataStore.edit { it.remove(TOKEN_KEY) }
+        context.dataStore.edit { it.remove(TOKEN_KEY); it.remove(ROLE_KEY) }
     }
 }

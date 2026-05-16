@@ -17,7 +17,9 @@ class AuthInterceptor(private val dataStore: TokenDataStore) : Interceptor {
         val token = runBlocking { dataStore.token.firstOrNull() }
         val request = chain.request().newBuilder().apply {
             if (token != null) addHeader("Authorization", "Bearer $token")
-            addHeader("Accept", "application/json") 
+            addHeader("Accept", "application/json")
+            // Necesario para que Spatie Translatable devuelva el campo en el idioma correcto
+            addHeader("Accept-Language", "es")
         }.build()
         return chain.proceed(request)
     }

@@ -26,11 +26,14 @@ class MainActivity : ComponentActivity() {
 
                 // Observa el token — si existe el usuario está autenticado
                 val token by tokenDataStore.token.collectAsState(initial = null)
+                val role  by tokenDataStore.role.collectAsState(initial = null)
                 val isAuthenticated = token != null
+                val isTeacher = role?.lowercase() == "teacher"
 
                 AppNavGraph(
-                    navController = navController,
+                    navController   = navController,
                     isAuthenticated = isAuthenticated,
+                    isTeacher       = isTeacher,
                 )
             }
         }

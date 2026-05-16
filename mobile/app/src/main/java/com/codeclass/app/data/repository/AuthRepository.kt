@@ -14,6 +14,7 @@ class AuthRepository(
     suspend fun login(email: String, password: String): User {
         val response = api.login(mapOf("email" to email, "password" to password))
         dataStore.saveToken(response.token)
+        dataStore.saveRole(response.user.role)
         return response.user
     }
 
@@ -29,12 +30,13 @@ class AuthRepository(
             )
         )
         dataStore.saveToken(response.token)
+        dataStore.saveRole(response.user.role)
         return response.user
     }
 
     // Revoca el token en el backend y lo borra localmente
     suspend fun logout() {
-        runCatching { api.logout() } 
+        runCatching { api.logout() }
         dataStore.clearToken()
     }
 }
