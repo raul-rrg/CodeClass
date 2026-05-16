@@ -53,16 +53,30 @@
     "challenges": "Retos",
     "ranking": "Ranking",
     "tournaments": "Torneos",
-    "about": "About",
+    "about": "Acerca de",
     "my_progress": "Mi Progreso",
     "create_challenge": "Crear reto",
     "my_challenges": "Mis Retos",
     "statistics": "Estadísticas",
-    "login": "Login",
-    "signup": "Sign up",
+    "login": "Iniciar sesión",
+    "signup": "Registrarse",
     "my_profile": "Mi Perfil",
     "logout": "Cerrar Sesión",
     "language": "Idioma"
+  },
+  "about": {
+    "creator_name": "Raúl Rivera Garrido",
+    "creator_role": "Desarrollador Full-Stack",
+    "creator_bio": "Estudiante en el IES Laguna de Joatzel del grado superior de desarrollo de aplicaciones multiplataforma (DAM).",
+    "stack_title": "Stack Tecnológico",
+    "stack_subtitle": "Las herramientas detrás de CodeClass",
+    "role_frontend": "Frontend",
+    "role_backend": "Backend",
+    "role_android": "Android",
+    "role_database": "Base de datos",
+    "role_deploy": "Despliegue",
+    "role_evaluator": "Evaluador de código",
+    "footer_rights": "CodeClass · Todos los derechos reservados"
   },
   "home": {
     "title": "Dashboard"

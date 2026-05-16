@@ -64,6 +64,20 @@
     "logout": "Log out",
     "language": "Language"
   },
+  "about": {
+    "creator_name": "Raúl Rivera Garrido",
+    "creator_role": "Full-Stack Developer",
+    "creator_bio": "Multiplatform Application Development student at IES Laguna de Joatzel.",
+    "stack_title": "Tech Stack",
+    "stack_subtitle": "The tools behind CodeClass",
+    "role_frontend": "Frontend",
+    "role_backend": "Backend",
+    "role_android": "Android",
+    "role_database": "Database",
+    "role_deploy": "Deployment",
+    "role_evaluator": "Code evaluator",
+    "footer_rights": "CodeClass · All rights reserved"
+  },
   "home": {
     "title": "Dashboard"
   },

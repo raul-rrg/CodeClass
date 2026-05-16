@@ -188,20 +188,22 @@
             </div>
 
             <!-- Monaco Editor -->
-            <div class="flex-1 min-h-0">
+            <div class="flex-1 min-h-0 overflow-hidden">
                 <VueMonacoEditor
+                    v-if="fontsReady"
                     v-model:value="code"
                     :language="activeLang"
                     :theme="editorTheme"
                     :options="editorOptions"
                     class="h-full w-full"
+                    @mount="onEditorMount"
                 />
             </div>
 
             <!-- Drag handle (desktop only) -->
             <div
                 @mousedown="startResize"
-                @dblclick="terminalHeight = 192"
+                @dblclick="terminalHeight = 192; relayoutEditor()"
                 :class="[
                     'hidden md:flex h-2.5 shrink-0 cursor-row-resize items-center justify-center',
                     'border-t border-white/5 hover:border-blue-400/30 transition-colors duration-150',
@@ -416,7 +418,7 @@
 </template>
 
 <script setup>
-import { onMounted, onUnmounted, ref, computed, watch } from 'vue'
+import { onMounted, onUnmounted, nextTick, ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { VueMonacoEditor } from '@guolao/vue-monaco-editor'
 import { useRoute } from 'vue-router'
@@ -435,6 +437,26 @@ const { languages, activeLang, code, currentTemplate, selectLang, editorOptions,
 const { result, isLoading, showModal, runCode, submitSolution } = useSubmission(challenge)
 
 const mobileTab = ref('description')
+
+// Monaco mide métricas de fuente al inicializar. Si JetBrains Mono / Cascadia
+// aún no han cargado, usa monospace fallback → charWidth/lineHeight erróneos →
+// cursor desalineado en clicks. Esperamos a que las fuentes estén listas.
+const fontsReady = ref(false)
+Promise.all([
+    document.fonts.load('14px "JetBrains Mono"'),
+    document.fonts.load('14px "Cascadia Code"'),
+]).then(() => { fontsReady.value = true })
+
+let _editorInstance = null
+
+function onEditorMount(editor) {
+    _editorInstance = editor
+    nextTick(() => requestAnimationFrame(() => editor.layout()))
+}
+
+function relayoutEditor() {
+    if (_editorInstance) requestAnimationFrame(() => _editorInstance.layout())
+}
 
 
 const enrichedResults = computed(() => {
@@ -469,6 +491,7 @@ function onMouseMove(e) {
     const delta     = _startY - e.clientY
     const maxH      = (window.innerHeight - NAVBAR_H) * MAX_H_RATIO
     terminalHeight.value = Math.round(Math.min(maxH, Math.max(MIN_H, _startH + delta)))
+    relayoutEditor()
 }
 
 function onMouseUp() {
@@ -476,6 +499,7 @@ function onMouseUp() {
     isResizing.value               = false
     document.body.style.cursor     = ''
     document.body.style.userSelect = ''
+    relayoutEditor()
 }
 
 onMounted(() => {

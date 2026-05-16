@@ -63,6 +63,7 @@ export function useEditor(challenge) {
         lineNumbers:          'on',
         renderLineHighlight:  'all',
         padding:              { top: 16 },
+        automaticLayout:      true,
     }))
 
     // ── Lenguaje y código ─────────────────────────────────────────────
