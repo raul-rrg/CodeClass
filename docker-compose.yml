@@ -34,7 +34,38 @@ services:
       SESSION_DRIVER: database
       CACHE_STORE: database
       QUEUE_CONNECTION: database
-      JUDGE0_URL: ${JUDGE0_URL:-http://localhost:2358}
+      JUDGE0_URL: http://192.168.1.216:2358
+      DEEPL_API_KEY: 85a10881-c254-4aaf-b76b-b2ac2b0ae9bd:fx
+      APP_LOCALE: es
+      APP_FALLBACK_LOCALE: es
+      VIEW_COMPILED_PATH: /app/storage/framework/views
+      WEB_DOCUMENT_ROOT: /app/public
+    depends_on:
+      db:
+        condition: service_healthy
+
+  queue-worker:
+    build: ./backend
+    restart: unless-stopped
+    command: ["php", "artisan", "queue:work", "--sleep=3", "--tries=3", "--timeout=90"]
+    environment:
+      APP_KEY: base64:sAgo6Dm9YLbdIQBrTq8/H8A9haypVuq3X6HFtGoaNWM=
+      APP_ENV: production
+      APP_DEBUG: "false"
+      APP_URL: http://localhost:8000
+      DB_CONNECTION: mysql
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_DATABASE: codeclass
+      DB_USERNAME: codeclass_app
+      DB_PASSWORD: codeclass_pass
+      SESSION_DRIVER: database
+      CACHE_STORE: database
+      QUEUE_CONNECTION: database
+      JUDGE0_URL: http://192.168.1.216:2358
+      DEEPL_API_KEY: 85a10881-c254-4aaf-b76b-b2ac2b0ae9bd:fx
+      APP_LOCALE: es
+      APP_FALLBACK_LOCALE: es
       VIEW_COMPILED_PATH: /app/storage/framework/views
       WEB_DOCUMENT_ROOT: /app/public
     depends_on:
