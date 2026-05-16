@@ -1,12 +1,16 @@
 package com.codeclass.app.ui.screens.auth
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -29,7 +33,11 @@ import com.codeclass.app.viewmodel.AuthUiState
 import com.codeclass.app.viewmodel.AuthViewModel
 
 @Composable
-fun RegisterScreen(onRegisterSuccess: () -> Unit, onGoToLogin: () -> Unit) {
+fun RegisterScreen(
+    onRegisterSuccess: () -> Unit,
+    onGoToLogin: () -> Unit,
+    onBack: () -> Unit = onGoToLogin,
+) {
     val context = LocalContext.current
 
     val vm: AuthViewModel = viewModel(factory = object : ViewModelProvider.Factory {
@@ -66,159 +74,240 @@ fun RegisterScreen(onRegisterSuccess: () -> Unit, onGoToLogin: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(ColorBase),
-        contentAlignment = Alignment.Center,
+            .background(ColorBase)
+            .systemBarsPadding(),
     ) {
+        // Contenido superior con scroll
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .verticalScroll(rememberScrollState()) // scroll por si el teclado empuja el contenido
-                .padding(horizontal = 24.dp, vertical = 32.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 24.dp)
+                .padding(top = 16.dp)
+                .padding(bottom = 120.dp),
         ) {
-            Text("Crear cuenta", fontSize = 28.sp, fontWeight = FontWeight.Bold, color = ColorTitle)
-            Spacer(Modifier.height(4.dp))
-            Text("Únete a CodeClass", fontSize = 14.sp, color = ColorBody)
+            // Back button — cuadrado redondeado
+            Surface(
+                onClick = onBack,
+                shape = RoundedCornerShape(12.dp),
+                color = ColorSurface,
+                modifier = Modifier.size(40.dp),
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Icon(
+                        Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Volver",
+                        tint = ColorTitle,
+                        modifier = Modifier.size(20.dp),
+                    )
+                }
+            }
+
+            Spacer(Modifier.height(32.dp))
+
+            Text(
+                "Crea tu cuenta",
+                fontSize = 30.sp,
+                fontWeight = FontWeight.Bold,
+                color = ColorTitle,
+            )
+            Spacer(Modifier.height(6.dp))
+            Text(
+                "Empieza tu camino como future dev.",
+                fontSize = 14.sp,
+                color = ColorBody,
+            )
+
+            Spacer(Modifier.height(32.dp))
+
+            // NOMBRE
+            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                Text("NOMBRE", fontSize = 11.sp, fontWeight = FontWeight.SemiBold, color = ColorMuted, letterSpacing = 1.sp)
+                OutlinedTextField(
+                    value = name,
+                    onValueChange = { name = it },
+                    modifier = Modifier.fillMaxWidth(),
+                    placeholder = { Text("Ada Lovelace", color = ColorMuted) },
+                    singleLine = true,
+                    shape = RoundedCornerShape(12.dp),
+                    colors = authFieldColors(),
+                )
+            }
+
+            Spacer(Modifier.height(20.dp))
+
+            // EMAIL
+            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                Text("EMAIL", fontSize = 11.sp, fontWeight = FontWeight.SemiBold, color = ColorMuted, letterSpacing = 1.sp)
+                OutlinedTextField(
+                    value = email,
+                    onValueChange = { email = it; emailError = "" },
+                    modifier = Modifier.fillMaxWidth(),
+                    placeholder = { Text("ada@codeclass.dev", color = ColorMuted) },
+                    isError = emailError.isNotEmpty(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                    singleLine = true,
+                    shape = RoundedCornerShape(12.dp),
+                    colors = authFieldColors(),
+                )
+                if (emailError.isNotEmpty()) {
+                    Text(emailError, fontSize = 11.sp, color = Color(0xFFEF4444))
+                }
+            }
+
+            Spacer(Modifier.height(20.dp))
+
+            // CONTRASEÑA
+            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                Text("CONTRASEÑA", fontSize = 11.sp, fontWeight = FontWeight.SemiBold, color = ColorMuted, letterSpacing = 1.sp)
+                OutlinedTextField(
+                    value = password,
+                    onValueChange = { password = it; passwordError = "" },
+                    modifier = Modifier.fillMaxWidth(),
+                    placeholder = { Text("••••••••", color = ColorMuted) },
+                    trailingIcon = {
+                        IconButton(onClick = { showPassword = !showPassword }) {
+                            Icon(
+                                if (showPassword) Icons.Default.VisibilityOff else Icons.Default.Visibility,
+                                contentDescription = null,
+                                tint = ColorMuted,
+                            )
+                        }
+                    },
+                    visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
+                    singleLine = true,
+                    shape = RoundedCornerShape(12.dp),
+                    colors = authFieldColors(),
+                )
+            }
+
+            Spacer(Modifier.height(20.dp))
+
+            // CONFIRMAR CONTRASEÑA (requerido por el backend)
+            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                Text("CONFIRMAR CONTRASEÑA", fontSize = 11.sp, fontWeight = FontWeight.SemiBold, color = ColorMuted, letterSpacing = 1.sp)
+                OutlinedTextField(
+                    value = passwordConfirmation,
+                    onValueChange = { passwordConfirmation = it; passwordError = "" },
+                    modifier = Modifier.fillMaxWidth(),
+                    placeholder = { Text("••••••••", color = ColorMuted) },
+                    trailingIcon = {
+                        IconButton(onClick = { showPasswordConfirmation = !showPasswordConfirmation }) {
+                            Icon(
+                                if (showPasswordConfirmation) Icons.Default.VisibilityOff else Icons.Default.Visibility,
+                                contentDescription = null,
+                                tint = ColorMuted,
+                            )
+                        }
+                    },
+                    isError = passwordError.isNotEmpty(),
+                    visualTransformation = if (showPasswordConfirmation) VisualTransformation.None else PasswordVisualTransformation(),
+                    singleLine = true,
+                    shape = RoundedCornerShape(12.dp),
+                    colors = authFieldColors(),
+                )
+                if (passwordError.isNotEmpty()) {
+                    Text(passwordError, fontSize = 11.sp, color = Color(0xFFEF4444))
+                }
+            }
+
             Spacer(Modifier.height(24.dp))
 
-            Surface(
-                color = ColorSurface,
-                shape = MaterialTheme.shapes.medium,
-                modifier = Modifier.fillMaxWidth(),
+            // SOY — selector de rol
+            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                Text("SOY", fontSize = 11.sp, fontWeight = FontWeight.SemiBold, color = ColorMuted, letterSpacing = 1.sp)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    RoleToggleButton(
+                        label = "Estudiante",
+                        selected = role == "student",
+                        onClick = { role = "student" },
+                        modifier = Modifier.weight(1f),
+                    )
+                    RoleToggleButton(
+                        label = "Profesor",
+                        selected = role == "teacher",
+                        onClick = { role = "teacher" },
+                        modifier = Modifier.weight(1f),
+                    )
+                }
+            }
+
+            if (serverError.isNotEmpty()) {
+                Spacer(Modifier.height(12.dp))
+                Text(serverError, fontSize = 12.sp, color = Color(0xFFEF4444))
+            }
+        }
+
+        // Sección fija en el fondo
+        Column(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp)
+                .padding(bottom = 24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Button(
+                onClick = {
+                    val emailOk = android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+                    if (!emailOk) { emailError = "Email no válido"; return@Button }
+                    if (password.length < 8) { passwordError = "Mínimo 8 caracteres"; return@Button }
+                    if (password != passwordConfirmation) { passwordError = "Las contraseñas no coinciden"; return@Button }
+                    vm.register(name.trim(), email.trim(), password, passwordConfirmation, role)
+                },
+                enabled = name.isNotBlank() && email.isNotBlank() && password.isNotBlank() && passwordConfirmation.isNotBlank() && !isLoading,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(52.dp),
+                shape = RoundedCornerShape(50),
+                colors = ButtonDefaults.buttonColors(containerColor = ColorPrimary),
             ) {
-                Column(modifier = Modifier.padding(24.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
-
-                    // Nombre
-                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                        Text("Nombre", fontSize = 13.sp, color = ColorSubtitle)
-                        OutlinedTextField(
-                            value = name,
-                            onValueChange = { name = it },
-                            modifier = Modifier.fillMaxWidth(),
-                            placeholder = { Text("Tu nombre", color = ColorMuted) },
-                            leadingIcon = { Icon(Icons.Default.Person, null, tint = ColorMuted) },
-                            singleLine = true,
-                            colors = authFieldColors(),
-                        )
-                    }
-
-                    // Email
-                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                        Text("Email", fontSize = 13.sp, color = ColorSubtitle)
-                        OutlinedTextField(
-                            value = email,
-                            onValueChange = { email = it; emailError = "" },
-                            modifier = Modifier.fillMaxWidth(),
-                            placeholder = { Text("tu@email.com", color = ColorMuted) },
-                            leadingIcon = { Icon(Icons.Default.Email, null, tint = ColorMuted) },
-                            isError = emailError.isNotEmpty(),
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                            singleLine = true,
-                            colors = authFieldColors(),
-                        )
-                        if (emailError.isNotEmpty()) Text(emailError, fontSize = 11.sp, color = Color(0xFFEF4444))
-                    }
-
-                    // Contraseña
-                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                        Text("Contraseña", fontSize = 13.sp, color = ColorSubtitle)
-                        OutlinedTextField(
-                            value = password,
-                            onValueChange = { password = it; passwordError = "" },
-                            modifier = Modifier.fillMaxWidth(),
-                            placeholder = { Text("Mínimo 8 caracteres", color = ColorMuted) },
-                            leadingIcon = { Icon(Icons.Default.Lock, null, tint = ColorMuted) },
-                            trailingIcon = {
-                                IconButton(onClick = { showPassword = !showPassword }) {
-                                    Icon(if (showPassword) Icons.Default.VisibilityOff else Icons.Default.Visibility, null, tint = ColorMuted)
-                                }
-                            },
-                            visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
-                            singleLine = true,
-                            colors = authFieldColors(),
-                        )
-                    }
-
-                    // Confirmar contraseña
-                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                        Text("Confirmar contraseña", fontSize = 13.sp, color = ColorSubtitle)
-                        OutlinedTextField(
-                            value = passwordConfirmation,
-                            onValueChange = { passwordConfirmation = it; passwordError = "" },
-                            modifier = Modifier.fillMaxWidth(),
-                            placeholder = { Text("••••••••", color = ColorMuted) },
-                            leadingIcon = { Icon(Icons.Default.Lock, null, tint = ColorMuted) },
-                            trailingIcon = {
-                                IconButton(onClick = { showPasswordConfirmation = !showPasswordConfirmation }) {
-                                    Icon(if (showPasswordConfirmation) Icons.Default.VisibilityOff else Icons.Default.Visibility, null, tint = ColorMuted)
-                                }
-                            },
-                            isError = passwordError.isNotEmpty(),
-                            visualTransformation = if (showPasswordConfirmation) VisualTransformation.None else PasswordVisualTransformation(),
-                            singleLine = true,
-                            colors = authFieldColors(),
-                        )
-                        if (passwordError.isNotEmpty()) Text(passwordError, fontSize = 11.sp, color = Color(0xFFEF4444))
-                    }
-
-                    // Selector de rol — igual que la web: dos botones toggle
-                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                        Text("Rol", fontSize = 13.sp, color = ColorSubtitle)
-                        Row(modifier = Modifier.fillMaxWidth()) {
-                            Button(
-                                onClick = { role = "student" },
-                                modifier = Modifier.weight(1f).height(44.dp),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = if (role == "student") ColorPrimary else ColorBase,
-                                    contentColor = if (role == "student") ColorTitle else ColorSubtitle,
-                                ),
-                                shape = MaterialTheme.shapes.extraSmall,
-                            ) { Text("Estudiante", fontSize = 13.sp, fontWeight = FontWeight.Bold) }
-
-                            Button(
-                                onClick = { role = "teacher" },
-                                modifier = Modifier.weight(1f).height(44.dp),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = if (role == "teacher") ColorPrimary else ColorBase,
-                                    contentColor = if (role == "teacher") ColorTitle else ColorSubtitle,
-                                ),
-                                shape = MaterialTheme.shapes.extraSmall,
-                            ) { Text("Profesor", fontSize = 13.sp, fontWeight = FontWeight.Bold) }
-                        }
-                    }
-
-                    if (serverError.isNotEmpty()) {
-                        Text(serverError, fontSize = 12.sp, color = Color(0xFFEF4444))
-                    }
-
-                    // Botón submit
-                    Button(
-                        onClick = {
-                            // Validación local antes de llamar al backend
-                            val emailOk = android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
-                            if (!emailOk) { emailError = "Email no válido"; return@Button }
-                            if (password.length < 8) { passwordError = "Mínimo 8 caracteres"; return@Button }
-                            if (password != passwordConfirmation) { passwordError = "Las contraseñas no coinciden"; return@Button }
-                            vm.register(name.trim(), email.trim(), password, passwordConfirmation, role)
-                        },
-                        enabled = name.isNotBlank() && email.isNotBlank() && password.isNotBlank() && passwordConfirmation.isNotBlank() && !isLoading,
-                        modifier = Modifier.fillMaxWidth().height(48.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = ColorPrimary),
-                    ) {
-                        if (isLoading) CircularProgressIndicator(color = ColorTitle, modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
-                        else Text("Crear cuenta", fontWeight = FontWeight.Bold)
-                    }
+                if (isLoading) {
+                    CircularProgressIndicator(color = ColorTitle, modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
+                } else {
+                    Text("CREAR CUENTA", fontWeight = FontWeight.Bold, fontSize = 15.sp, letterSpacing = 1.sp)
                 }
             }
 
             Spacer(Modifier.height(16.dp))
 
-            Row {
-                Text("¿Ya tienes cuenta? ", fontSize = 13.sp, color = ColorBody)
-                TextButton(onClick = onGoToLogin, contentPadding = PaddingValues(0.dp)) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text("¿Ya tienes cuenta?", fontSize = 13.sp, color = ColorBody)
+                TextButton(
+                    onClick = onGoToLogin,
+                    contentPadding = PaddingValues(horizontal = 4.dp, vertical = 2.dp),
+                    modifier = Modifier.height(32.dp),
+                ) {
                     Text("Inicia sesión", fontSize = 13.sp, color = ColorAccent, fontWeight = FontWeight.Bold)
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun RoleToggleButton(
+    label: String,
+    selected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    OutlinedButton(
+        onClick = onClick,
+        modifier = modifier.height(48.dp),
+        shape = RoundedCornerShape(12.dp),
+        colors = ButtonDefaults.outlinedButtonColors(
+            containerColor = if (selected) ColorPrimary else ColorSurface,
+            contentColor = ColorTitle,
+        ),
+        border = BorderStroke(
+            width = if (selected) 1.5.dp else 1.dp,
+            color = if (selected) ColorPrimary else Color.White.copy(alpha = 0.12f),
+        ),
+    ) {
+        Text(label, fontWeight = FontWeight.Bold, fontSize = 14.sp)
     }
 }
