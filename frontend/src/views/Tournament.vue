@@ -104,12 +104,25 @@
                         <!-- Derecha: countdown (activo) o fecha (próximo) -->
                         <div v-if="tournament.status === 'active'" class="shrink-0 self-center flex flex-col items-center gap-1 pl-8 mr-14 border-l border-white/10">
                             <p class="text-sm font-semibold uppercase tracking-widest text-green-400/60">{{ $t('tournament.time_remaining') }}</p>
-                            <p class="text-4xl font-bold font-mono text-white tabular-nums tracking-wider">{{ heroCountdown }}</p>
+                            <p v-if="countdownSecs > 0" :class="[
+                                'text-4xl font-bold font-mono tabular-nums tracking-wider transition-colors duration-300',
+                                countdownSecs <= 10 ? 'text-red-400 animate-pulse' : 'text-white'
+                            ]">{{ heroCountdown }}</p>
+                            <p v-else-if="showTimeUp" class="text-4xl font-bold text-red-400 tracking-widest animate-time-up">¡TIEMPO!</p>
                         </div>
                         <div v-else-if="tournament.status === 'upcoming'" class="shrink-0 self-center flex flex-col items-center gap-1 pl-8 mr-25 border-l border-white/10">
                             <p class="text-sm font-semibold uppercase tracking-widest text-blue-400/60">{{ $t('tournament.starts_at') }}</p>
                             <p class="text-2xl font-bold text-white">{{ formatStartDate(tournament.starts_at) }}</p>
                             <p class="text-sm font-mono text-blue-300/70">{{ formatStartTime(tournament.starts_at) }}</p>
+                        </div>
+                        <div v-else class="shrink-0 self-center flex flex-col items-center gap-2 pl-8 mr-14 border-l border-white/10">
+                            <svg class="w-8 h-8 text-white/20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/>
+                                <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>
+                                <path d="M12 17v4"/><path d="M8 21h8"/>
+                            </svg>
+                            <p class="text-sm font-semibold uppercase tracking-widest text-white/30">{{ $t('tournament.status_finished') }}</p>
+                            <p class="text-xs text-white/20">{{ formatDate(tournament.ends_at) }}</p>
                         </div>
 
                     </div>
@@ -235,16 +248,49 @@ const joinError   = ref('')
 const joinCode    = ref('')
 const codeCopied  = ref(false)
 
-const countdownSecs = ref(0)
-let countdownTimer  = null
-let pollTimer       = null
+const countdownSecs   = ref(0)
+const showTimeUp      = ref(false)
+let countdownTimer    = null
+let pollTimer         = null
+let transitionPending = false
+let audioStarted      = false
 
+const countdownAudio = new Audio('/sounds/countdown-tick.mp3')
 
-// Actualiza el countdown cada segundo según el estado del torneo (tiempo restante para empezar o para acabar)
+// Actualiza el countdown cada segundo. Cuando llega a 0 refetchea el torneo para
+// recoger el cambio de estado (upcoming→active o active→finished) sin recargar la página.
+// showTimeUp solo se activa si el torneo estaba activo al llegar a 0 (no durante upcoming→active).
 function updateCountdown() {
     if (!tournament.value) return
-    const targetDate = tournament.value.status === 'active' ? tournament.value.ends_at : tournament.value.starts_at
-    countdownSecs.value = Math.max(0, Math.floor((new Date(targetDate) - Date.now()) / 1000))
+    const isActive   = tournament.value.status === 'active'
+    const targetDate = isActive ? tournament.value.ends_at : tournament.value.starts_at
+    const secs       = Math.max(0, Math.floor((new Date(targetDate) - Date.now()) / 1000))
+
+    // Arranca el audio de cuenta atrás al entrar en los últimos 10 segundos del torneo activo.
+    // Si la página se abre con menos de 10s restantes, ajustamos el offset para sincronizar.
+    if (isActive && secs <= 10 && secs > 0 && !audioStarted) {
+        audioStarted = true
+        countdownAudio.currentTime = Math.max(0, 10 - secs)
+        countdownAudio.play().catch(() => {})
+    }
+
+    if (secs === 0 && countdownSecs.value > 0 && !transitionPending) {
+        transitionPending = true
+        if (isActive) showTimeUp.value = true
+        setTimeout(async () => {
+            await fetchTournament()
+            showTimeUp.value = false
+            audioStarted = false
+            updateCountdown()
+            await fetchLeaderboard()
+            if (tournament.value?.status === 'active' && !pollTimer) {
+                pollTimer = setInterval(fetchLeaderboard, 30000)
+            }
+            transitionPending = false
+        }, 1500)
+    }
+
+    countdownSecs.value = secs
 }
 
 // Formatea el countdown en formato HH:MM:SS
@@ -356,5 +402,18 @@ onMounted(async () => {
 onUnmounted(() => {
     clearInterval(pollTimer)
     clearInterval(countdownTimer)
+    countdownAudio.pause()
+    countdownAudio.src = ''
 })
 </script>
+
+<style scoped>
+@keyframes time-up {
+    0%   { transform: scale(1.4); opacity: 0; }
+    60%  { transform: scale(0.95); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+}
+.animate-time-up {
+    animation: time-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+</style>

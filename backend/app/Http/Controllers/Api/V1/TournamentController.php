@@ -43,7 +43,7 @@ class TournamentController extends Controller
             'name'             => 'required|string|max:255',
             'description'      => 'nullable|string',
             'starts_at'        => 'required|date|after:now',
-            'duration_minutes' => 'required|integer|min:5|max:480',
+            'duration_minutes' => 'required|integer|min:1|max:480',
             'is_public'        => 'boolean',
             'exercise_ids'     => 'required|array|min:1',
             'exercise_ids.*'   => 'integer|exists:exercises,id',
@@ -103,7 +103,7 @@ class TournamentController extends Controller
 
 
         // Solo los participantes inscritos o el creador pueden ver la lista de ejercicios y su estado resuelto/no resuelto.
-        if (Gate::allows('viewExercises', $tournament)) {
+        if ($user && Gate::forUser($user)->allows('viewExercises', $tournament)) {
             $solvedIds = $this->getSolvedExerciseIds($user, $tournament);
 
             $data['exercises'] = $tournament->exercises()

@@ -36,7 +36,7 @@
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-white/40 uppercase tracking-widest mb-2">{{ $t('create_tournament.duration_label') }}</label>
-                        <input v-model.number="form.duration_minutes" type="number" min="5" max="480" required placeholder="90"
+                        <input v-model.number="form.duration_minutes" type="number" min="1" max="480" required placeholder="90"
                             class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-white/20 outline-none focus:border-blue-500/40 transition-colors" />
                     </div>
                 </div>

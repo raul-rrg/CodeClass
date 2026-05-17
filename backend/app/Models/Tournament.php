@@ -35,7 +35,7 @@ class Tournament extends Model
     {
         $now = now();
         if ($now->lt($this->starts_at)) return 'upcoming';
-        if ($now->gt($this->ends_at))   return 'finished';
+        if ($now->gte($this->ends_at))  return 'finished';
         return 'active';
     }
 

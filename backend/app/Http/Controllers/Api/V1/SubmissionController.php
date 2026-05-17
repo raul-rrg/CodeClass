@@ -30,7 +30,9 @@ class SubmissionController extends Controller
                     return response()->json(['message' => 'No estás inscrito en este torneo.'], 403);
                 }
             }
-            // finished: cualquier autenticado puede enviar, ya no cuenta para el torneo
+            if ($tournament->status === 'finished') {
+                return response()->json(['message' => 'El torneo ya ha finalizado.'], 403);
+            }
         }
 
         $submission = Submission::create([

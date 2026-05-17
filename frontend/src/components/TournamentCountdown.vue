@@ -1,7 +1,11 @@
 <template>
     <div :class="['flex flex-col gap-1', align === 'end' ? 'items-end' : 'items-center']">
         <p :class="['font-semibold uppercase tracking-widest', size === 'lg' ? 'text-xs text-white/40' : 'text-[10px] text-white/30']">{{ label }}</p>
-        <p v-if="remaining > 0" :class="['font-bold font-mono text-white tracking-widest', size === 'lg' ? 'text-5xl' : 'text-2xl']">{{ formatted }}</p>
+        <p v-if="remaining > 0" :class="[
+            'font-bold font-mono tracking-widest transition-colors duration-300',
+            size === 'lg' ? 'text-5xl' : 'text-2xl',
+            remaining <= 10 ? 'text-red-400 animate-pulse' : 'text-white'
+        ]">{{ formatted }}</p>
         <p v-else :class="['font-semibold text-white/40', size === 'lg' ? 'text-base' : 'text-sm']">{{ $t('tournament.status_finished') }}</p>
     </div>
 </template>

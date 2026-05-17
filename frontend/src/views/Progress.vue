@@ -48,7 +48,7 @@
                     <div v-else class="flex flex-col gap-2">
                         <div v-for="sub in submissions" :key="sub.id"
                             class="flex items-center justify-between bg-surface border border-white/5 rounded-lg px-5 py-3">
-                            <span class="text-sm text-white/80">{{ sub.exercise?.title }}</span>
+                            <span class="text-sm text-white/80">{{ localTitle(sub.exercise?.title) }}</span>
                             <div class="flex items-center gap-5 shrink-0">
                                 <div v-if="sub.max_execution_time != null" class="flex items-center gap-1.5 text-sky-400/80">
                                     <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -97,6 +97,12 @@ import VueApexCharts from 'vue3-apexcharts'
 const apexchart = VueApexCharts
 
 const { locale, t } = useI18n()
+
+function localTitle(title) {
+    if (!title) return ''
+    if (typeof title === 'object') return title[locale.value] ?? title[Object.keys(title)[0]] ?? ''
+    return title
+}
 const submissions = ref([])
 const loading     = ref(true)
 

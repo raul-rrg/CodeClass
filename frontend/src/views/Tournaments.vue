@@ -12,14 +12,10 @@
                     <!-- Botón desplegable código privado -->
                     <div v-if="auth.isAuthenticated" class="relative">
                         <button @click="showCodeInput = !showCodeInput; findCodeError = ''"
-                            :class="['flex items-center gap-2 px-4 py-2 rounded-lg border text-sm font-semibold transition-all',
+                            :class="['px-4 py-2 rounded-lg border text-sm font-semibold transition-all',
                                 showCodeInput
                                     ? 'bg-white/8 border-white/20 text-white/80'
                                     : 'bg-white/4 border-white/10 text-white/40 hover:text-white/70 hover:border-white/20']">
-                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/>
-                                <line x1="9" y1="12" x2="15" y2="12"/>
-                            </svg>
                             {{ $t('tournaments.join_private_btn') }}
                         </button>
 
